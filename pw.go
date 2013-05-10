@@ -16,19 +16,7 @@ The generated hashes are 256 bits in length, as are any generated salts.
 
 The input HMAC key and password are only limited in length by the underlying Go crypto libraries.
 
-The library provides 2 functions:
-
-Check:
-- Takes an HMAC key, a hash to verify, a password and a salt (as byte slices)
-- scrypt transforms the password and salt, and then HMAC transforms the result.
-- Compares the resulting 256 bit HMAC hash against the input hash.
-- Returns a boolean.
-
-New:
-- Takes an HMAC key and a password (as byte slices)
-- Generates a new salt using "crypto/rand"
-- scrypt transforms the password and salt, and then HMAC transforms the result.
-- Returns the resulting 256 bit HMAC hash and the 256 bit salt.
+Use godoc for documentation
 
 [1] http://crackstation.net/hashing-security.htm
 */
