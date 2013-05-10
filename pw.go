@@ -67,11 +67,11 @@ type PwHash struct {
 }
 
 // New returns a new pwHash
-func New() *PwHash { return new(pwHash) }
+func New() *PwHash { return new(PwHash) }
 
 // doHash scrypt transforms the password and salt, and then HMAC transforms the result.
 // Returns the resulting 256 bit hash.
-func (p *pwHash) doHash() (h []byte, err error) {
+func (p *PwHash) doHash() (h []byte, err error) {
 	sck, err := scrypt.Key([]byte(p.Pass), p.Salt, N, R, P, KEYLENGTH)
 	if err != nil {
 		return nil, err
