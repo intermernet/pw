@@ -1,5 +1,5 @@
 /*
-Copyright Mike Hughes 2012 (intermernet AT gmail DOT com)
+Copyright Mike Hughes 2013 (intermernet AT gmail DOT com)
 
 pw is a Go library for password authentication
 
