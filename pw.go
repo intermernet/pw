@@ -59,7 +59,7 @@ const (
 )
 
 // pwHash contains the HMAC, the password, the salt, and the final hash
-type pwHash struct {
+type PwHash struct {
 	Hmac []byte
 	Pass string
 	Salt []byte
@@ -67,7 +67,7 @@ type pwHash struct {
 }
 
 // New returns a new pwHash
-func New() *pwHash { return new(pwHash) }
+func New() *PwHash { return new(pwHash) }
 
 // doHash scrypt transforms the password and salt, and then HMAC transforms the result.
 // Returns the resulting 256 bit hash.
@@ -83,7 +83,7 @@ func (p *pwHash) doHash() (h []byte, err error) {
 }
 
 // Check call doHash() and compares the resulting hash against the check hash and returns a boolean.
-func (p *pwHash) Check() (chk bool, err error) {
+func (p *PwHash) Check() (chk bool, err error) {
 	hchk, err := p.doHash()
 	if err != nil {
 		return false, err
@@ -96,7 +96,7 @@ func (p *pwHash) Check() (chk bool, err error) {
 
 // New generates a new salt using "crypto/rand"
 // It then calls doHash() and returns the resulting hash and salt.
-func (p *pwHash) New() (err error) {
+func (p *PwHash) New() (err error) {
 	p.Salt = make([]byte, KEYLENGTH)
 	_, err = io.ReadFull(rand.Reader, p.Salt)
 	if err != nil {
