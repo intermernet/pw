@@ -71,7 +71,7 @@ func (p *PwHash) doHash() (err error) {
 	return nil
 }
 
-// randHash returns a random slice of bytes using crypto/rand
+// randHash generates a random slice of bytes using crypto/rand
 // of length l and returns it.
 func (p *PwHash) randHash(l int) (rh []byte, err error) {
 	rh = make([]byte, KEYLENGTH)
