@@ -46,13 +46,13 @@ const (
 	P = 1
 )
 
-// pwHash contains the HMAC, the password, the salt, the hash to compare, and the check hash
+// pwHash contains the HMAC, the password, the salt, the hash to check
 type PwHash struct {
-	Hmac []byte
-	Pass string
-	Salt []byte
-	Hash []byte
-	hchk []byte
+	Hmac []byte // HMAC Key
+	Pass string // Password
+	Salt []byte // Salt
+	Hash []byte // Hash to check
+	hchk []byte // Hash to check against
 }
 
 // New returns a new pwHash
