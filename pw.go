@@ -46,12 +46,13 @@ const (
 	P = 1
 )
 
-// pwHash contains the HMAC, the password, the salt, and the final hash
+// pwHash contains the HMAC, the password, the salt, the hash to compare, and the check hash
 type PwHash struct {
 	Hmac []byte
 	Pass string
 	Salt []byte
 	Hash []byte
+	hchk []byte
 }
 
 // New returns a new pwHash
@@ -59,40 +60,57 @@ func New() *PwHash { return new(PwHash) }
 
 // doHash scrypt transforms the password and salt, and then HMAC transforms the result.
 // Returns the resulting 256 bit hash.
-func (p *PwHash) doHash() (h []byte, err error) {
+func (p *PwHash) doHash() (err error) {
 	sck, err := scrypt.Key([]byte(p.Pass), p.Salt, N, R, P, KEYLENGTH)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	hmh := hmac.New(sha256.New, p.Hmac)
 	hmh.Write(sck)
-	p.Hash = hmh.Sum(nil)
-	return p.Hash, nil
+	p.hchk = hmh.Sum(nil)
+	return nil
+}
+
+// randHash returns a random slice of bytes using crypto/rand
+// of length kl and returns it.
+func (p *PwHash) randHash(kl int) (rh []byte, err error) {
+	rh = make([]byte, KEYLENGTH)
+	_, err = io.ReadFull(rand.Reader, rh)
+	if err != nil {
+		return nil, err
+	}
+	return rh, nil
+
+}
+
+// New generates a new salt using "crypto/rand"
+// It then calls doHash() and sets the resulting hash and salt.
+func (p *PwHash) Create() (err error) {
+	p.Salt, err = p.randHash(KEYLENGTH)
+	if err != nil {
+		return err
+	}
+	err = p.doHash()
+	if err != nil {
+		return err
+	}
+	p.Hash, p.hchk = p.hchk, []byte{}
+	return nil
 }
 
 // Check call doHash() and compares the resulting hash against the check hash and returns a boolean.
 func (p *PwHash) Check() (chk bool, err error) {
-	hchk, err := p.doHash()
+	chkerr := errors.New("Error: Hash verification failed")
+	err = p.doHash()
 	if err != nil {
 		return false, err
 	}
-	if subtle.ConstantTimeCompare(p.Hash, hchk) != 1 {
-		return false, errors.New("Error: Hash verification failed")
+	if len(p.Hash) != len(p.hchk) {
+		return false, chkerr
 	}
+	if subtle.ConstantTimeCompare(p.hchk, p.Hash) != 1 {
+		return false, chkerr
+	}
+	p.Hash, p.hchk = []byte{}, []byte{}
 	return true, nil
-}
-
-// New generates a new salt using "crypto/rand"
-// It then calls doHash() and returns the resulting hash and salt.
-func (p *PwHash) New() (err error) {
-	p.Salt = make([]byte, KEYLENGTH)
-	_, err = io.ReadFull(rand.Reader, p.Salt)
-	if err != nil {
-		return err
-	}
-	p.Hash, err = p.doHash()
-	if err != nil {
-		return err
-	}
-	return nil
 }
