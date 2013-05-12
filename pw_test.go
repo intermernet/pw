@@ -400,6 +400,7 @@ var good = []testPw{
 
 var bad = []testPw{
 	{emptyHash, emptyString, emptyHash, emptyHash, true}, // No input, No output
+	{emptyHash, emptyString, emptyHash, hashNorm, true},  // No input, Wrong output
 	{hmacNorm, passNorm, saltNorm, emptyHash, true},      // Normal input, No output
 	{hmacNorm, passNorm, saltNorm, hashNorm, true},       // Normal input, Wrong output
 }
