@@ -72,8 +72,8 @@ func (p *PwHash) doHash() (err error) {
 }
 
 // randHash returns a random slice of bytes using crypto/rand
-// of length kl and returns it.
-func (p *PwHash) randHash(kl int) (rh []byte, err error) {
+// of length l and returns it.
+func (p *PwHash) randHash(l int) (rh []byte, err error) {
 	rh = make([]byte, KEYLENGTH)
 	_, err = io.ReadFull(rand.Reader, rh)
 	if err != nil {
@@ -85,6 +85,7 @@ func (p *PwHash) randHash(kl int) (rh []byte, err error) {
 
 // New generates a new salt using "crypto/rand"
 // It then calls doHash() and sets the resulting hash and salt.
+// Clears the hchk field.
 func (p *PwHash) Create() (err error) {
 	p.Salt, err = p.randHash(KEYLENGTH)
 	if err != nil {
@@ -98,7 +99,8 @@ func (p *PwHash) Create() (err error) {
 	return nil
 }
 
-// Check call doHash() and compares the resulting hash against the check hash and returns a boolean.
+// Check call doHash() and compares the resulting hash against the check hash
+// Clears the Hash and hchk fields and returns a boolean.
 func (p *PwHash) Check() (chk bool, err error) {
 	chkerr := errors.New("Error: Hash verification failed")
 	err = p.doHash()
