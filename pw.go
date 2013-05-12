@@ -46,7 +46,7 @@ const (
 	P = 1
 )
 
-// pwHash contains the HMAC, the password, the salt, the hash to check
+// pwHash contains the HMAC, the password, the salt and the hash to check
 type PwHash struct {
 	Hmac []byte // HMAC Key
 	Pass string // Password
@@ -85,7 +85,6 @@ func (p *PwHash) randHash(l int) (rh []byte, err error) {
 
 // New generates a new salt using "crypto/rand"
 // It then calls doHash() and sets the resulting hash and salt.
-// Clears the hchk field.
 func (p *PwHash) Create() (err error) {
 	p.Salt, err = p.randHash(KEYLENGTH)
 	if err != nil {
@@ -95,12 +94,12 @@ func (p *PwHash) Create() (err error) {
 	if err != nil {
 		return err
 	}
-	p.Hash, p.hchk = p.hchk, []byte{}
+	p.Hash, p.hchk = p.hchk, []byte{} // Clear the hchk field.
 	return nil
 }
 
-// Check call doHash() and compares the resulting hash against the check hash
-// Clears the Hash and hchk fields and returns a boolean.
+// Check calls doHash() and compares the resulting hash against the check hash.
+// Returns a boolean.
 func (p *PwHash) Check() (chk bool, err error) {
 	chkerr := errors.New("Error: Hash verification failed")
 	err = p.doHash()
@@ -113,6 +112,6 @@ func (p *PwHash) Check() (chk bool, err error) {
 	if subtle.ConstantTimeCompare(p.hchk, p.Hash) != 1 {
 		return false, chkerr
 	}
-	p.Hash, p.hchk = []byte{}, []byte{}
+	p.Hash, p.hchk = []byte{}, []byte{} // Clear the Hash and hchk fields.
 	return true, nil
 }
