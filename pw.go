@@ -83,7 +83,7 @@ func (p *PwHash) randHash(l int) (rh []byte, err error) {
 
 }
 
-// New generates a new salt using "crypto/rand"
+// Create generates a new salt using "crypto/rand"
 // It then calls doHash() and sets the resulting hash and salt.
 func (p *PwHash) Create() (err error) {
 	p.Salt, err = p.randHash(KEYLENGTH)
