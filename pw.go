@@ -19,6 +19,7 @@ The input HMAC key and password are only limited in length by the underlying Go 
 Use godoc [2] for documentation
 
 [1] http://crackstation.net/hashing-security.htm
+
 [2] http://godoc.org/github.com/Intermernet/pw
 */
 package pw
