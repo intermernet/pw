@@ -20,7 +20,6 @@ Use godoc for documentation
 
 [1] http://crackstation.net/hashing-security.htm
 */
-
 package pw
 
 import (
