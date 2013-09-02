@@ -16,9 +16,10 @@ The generated hashes are 256 bits in length, as are any generated salts.
 
 The input HMAC key and password are only limited in length by the underlying Go crypto libraries.
 
-Use godoc for documentation
+Use godoc [2] for documentation
 
 [1] http://crackstation.net/hashing-security.htm
+[2] http://godoc.org/github.com/Intermernet/pw
 */
 package pw
 
