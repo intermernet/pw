@@ -1,5 +1,7 @@
 pw is a Go library for password authentication
 
+[![Build Status](https://drone.io/github.com/Intermernet/pw/status.png)](https://drone.io/github.com/Intermernet/pw/latest)
+
 It attempts to put into practice the methodology described in [CrackStation's "Salted Password
 Hashing - Doing it Right".][1]
 
