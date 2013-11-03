@@ -76,8 +76,7 @@ func (p *PwHash) doHash() (err error) {
 // of length l and returns it.
 func (p *PwHash) randHash(l int) (rh []byte, err error) {
 	rh = make([]byte, KEYLENGTH)
-	_, err = io.ReadFull(rand.Reader, rh)
-	if err != nil {
+	if _, err = io.ReadFull(rand.Reader, rh); err != nil {
 		return nil, err
 	}
 	return rh, nil
@@ -91,8 +90,7 @@ func (p *PwHash) Create() (err error) {
 	if err != nil {
 		return err
 	}
-	err = p.doHash()
-	if err != nil {
+	if err = p.doHash(); err != nil {
 		return err
 	}
 	p.Hash, p.hchk = p.hchk, []byte{} // Clear the hchk field.
@@ -103,8 +101,7 @@ func (p *PwHash) Create() (err error) {
 // Returns a boolean.
 func (p *PwHash) Check() (chk bool, err error) {
 	chkerr := errors.New("Error: Hash verification failed")
-	err = p.doHash()
-	if err != nil {
+	if err = p.doHash(); err != nil {
 		return false, err
 	}
 	if subtle.ConstantTimeEq(int32(len(p.Hash)), int32(len(p.hchk))) != 1 {
