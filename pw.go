@@ -25,13 +25,14 @@ Use godoc [2] for documentation
 package pw
 
 import (
-	"code.google.com/p/go.crypto/scrypt"
 	"crypto/hmac"
 	"crypto/rand"
 	"crypto/sha256"
 	"crypto/subtle"
 	"errors"
 	"io"
+
+	"code.google.com/p/go.crypto/scrypt"
 )
 
 const (
@@ -47,13 +48,13 @@ const (
 	P = 1
 )
 
-// pwHash contains the HMAC, the password, the salt and the hash to check
+// PwHash contains the HMAC, the password, the salt and the hash to check
 type PwHash struct {
 	Hmac []byte // HMAC Key
 	Pass string // Password
 	Salt []byte // Salt
 	Hash []byte // Hash to check
-	hchk []byte // Hash to check against
+	hchk []byte // Hash to compare against
 }
 
 // New returns a new pwHash
@@ -61,7 +62,7 @@ func New() *PwHash { return new(PwHash) }
 
 // doHash scrypt transforms the password and salt, and then HMAC transforms the result.
 // Returns the resulting 256 bit hash.
-func (p *PwHash) doHash() (err error) {
+func (p *PwHash) doHash() error {
 	sck, err := scrypt.Key([]byte(p.Pass), p.Salt, N, R, P, KEYLENGTH)
 	if err != nil {
 		return err
@@ -74,23 +75,22 @@ func (p *PwHash) doHash() (err error) {
 
 // randHash generates a random slice of bytes using crypto/rand
 // of length l and returns it.
-func (p *PwHash) randHash(l int) (rh []byte, err error) {
-	rh = make([]byte, KEYLENGTH)
-	if _, err = io.ReadFull(rand.Reader, rh); err != nil {
-		return nil, err
+func (p *PwHash) randSalt() error {
+	rh := make([]byte, KEYLENGTH)
+	if _, err := io.ReadFull(rand.Reader, rh); err != nil {
+		return err
 	}
-	return rh, nil
-
+	p.Salt = rh
+	return nil
 }
 
 // Create generates a new salt using "crypto/rand"
 // It then calls doHash() and sets the resulting hash and salt.
-func (p *PwHash) Create() (err error) {
-	p.Salt, err = p.randHash(KEYLENGTH)
-	if err != nil {
+func (p *PwHash) Create() error {
+	if err := p.randSalt(); err != nil {
 		return err
 	}
-	if err = p.doHash(); err != nil {
+	if err := p.doHash(); err != nil {
 		return err
 	}
 	p.Hash, p.hchk = p.hchk, []byte{} // Clear the hchk field.
@@ -99,9 +99,9 @@ func (p *PwHash) Create() (err error) {
 
 // Check calls doHash() and compares the resulting hash against the check hash.
 // Returns a boolean.
-func (p *PwHash) Check() (chk bool, err error) {
+func (p *PwHash) Check() (bool, error) {
 	chkerr := errors.New("Error: Hash verification failed")
-	if err = p.doHash(); err != nil {
+	if err := p.doHash(); err != nil {
 		return false, err
 	}
 	if subtle.ConstantTimeEq(int32(len(p.Hash)), int32(len(p.hchk))) != 1 {
