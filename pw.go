@@ -1,7 +1,7 @@
 /*
-Copyright Mike Hughes 2013 (intermernet AT gmail DOT com)
+Copyright Mike Hughes 2013 (intermernet AT gmail DOT com).
 
-pw is a Go library for password authentication
+pw is a Go library for password authentication.
 
 It attempts to put into practice the methodology described in CrackStation's "Salted Password
 Hashing - Doing it Right". [1]
@@ -16,7 +16,7 @@ The generated hashes are 256 bits in length, as are any generated salts.
 
 The input HMAC key and password are only limited in length by the underlying Go crypto libraries.
 
-Use godoc [2] for documentation
+Use godoc [2] for documentation.
 
 [1] http://crackstation.net/hashing-security.htm
 
@@ -48,7 +48,7 @@ const (
 	P = 1
 )
 
-// PwHash contains the HMAC, the password, the salt and the hash to check
+// PwHash contains the HMAC, the password, the salt and the hash to check.
 type PwHash struct {
 	Hmac []byte // HMAC Key
 	Pass string // Password
@@ -57,11 +57,11 @@ type PwHash struct {
 	hchk []byte // Hash to compare against
 }
 
-// New returns a new pwHash
+// New returns a new pwHash.
 func New() *PwHash { return new(PwHash) }
 
 // doHash scrypt transforms the password and salt, and then HMAC transforms the result.
-// Returns the resulting 256 bit hash.
+// Assigns the resulting hash to the comparison hash.
 func (p *PwHash) doHash() error {
 	sck, err := scrypt.Key([]byte(p.Pass), p.Salt, N, R, P, KEYLENGTH)
 	if err != nil {
@@ -73,8 +73,8 @@ func (p *PwHash) doHash() error {
 	return nil
 }
 
-// randHash generates a random slice of bytes using crypto/rand
-// of length l and returns it.
+// randSalt generates a random slice of bytes using crypto/rand
+// of length KEYLENGTH and assigns it as a new salt.
 func (p *PwHash) randSalt() error {
 	rh := make([]byte, KEYLENGTH)
 	if _, err := io.ReadFull(rand.Reader, rh); err != nil {
@@ -84,7 +84,7 @@ func (p *PwHash) randSalt() error {
 	return nil
 }
 
-// Create generates a new salt using "crypto/rand"
+// Create generates a new salt using "crypto/rand".
 // It then calls doHash() and sets the resulting hash and salt.
 func (p *PwHash) Create() error {
 	if err := p.randSalt(); err != nil {
