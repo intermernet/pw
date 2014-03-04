@@ -100,15 +100,15 @@ func (p *PwHash) Create() error {
 // Check calls doHash() and compares the resulting hash against the check hash.
 // Returns a boolean.
 func (p *PwHash) Check() (bool, error) {
-	chkerr := errors.New("Error: Hash verification failed")
+	chkErr := errors.New("hash verification failed")
 	if err := p.doHash(); err != nil {
 		return false, err
 	}
 	if subtle.ConstantTimeEq(int32(len(p.Hash)), int32(len(p.hchk))) != 1 {
-		return false, chkerr
+		return false, chkErr
 	}
 	if subtle.ConstantTimeCompare(p.hchk, p.Hash) != 1 {
-		return false, chkerr
+		return false, chkErr
 	}
 	p.Hash, p.hchk = []byte{}, []byte{} // Clear the Hash and hchk fields.
 	return true, nil
