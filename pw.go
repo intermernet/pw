@@ -87,29 +87,28 @@ func (p *PwHash) randSalt() error {
 // Create generates a new salt using "crypto/rand".
 // It then calls doHash() and sets the resulting hash and salt.
 func (p *PwHash) Create() error {
+	defer func() { p.Hash, p.hchk = p.hchk, []byte{} }() // Clear the hchk field.
 	if err := p.randSalt(); err != nil {
 		return err
 	}
 	if err := p.doHash(); err != nil {
 		return err
 	}
-	p.Hash, p.hchk = p.hchk, []byte{} // Clear the hchk field.
 	return nil
 }
 
 // Check calls doHash() and compares the resulting hash against the check hash.
 // Returns a boolean.
 func (p *PwHash) Check() (bool, error) {
+	defer func() { p.Hash, p.hchk = []byte{}, []byte{} }() // Clear the Hash and hchk fields.
 	chkErr := errors.New("hash verification failed")
 	if err := p.doHash(); err != nil {
 		return false, err
 	}
-	if subtle.ConstantTimeEq(int32(len(p.Hash)), int32(len(p.hchk))) != 1 {
-		return false, chkErr
+	if len(p.Hash) == len(p.hchk) {
+		if subtle.ConstantTimeCompare(p.hchk, p.Hash) == 1 {
+			return true, nil
+		}
 	}
-	if subtle.ConstantTimeCompare(p.hchk, p.Hash) != 1 {
-		return false, chkErr
-	}
-	p.Hash, p.hchk = []byte{}, []byte{} // Clear the Hash and hchk fields.
-	return true, nil
+	return false, chkErr
 }
