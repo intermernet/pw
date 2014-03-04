@@ -105,7 +105,7 @@ func (p *PwHash) Check() (bool, error) {
 	if err := p.doHash(); err != nil {
 		return false, err
 	}
-	if len(p.Hash) == len(p.hchk) {
+	if subtle.ConstantTimeEq(int32(len(p.Hash)), int32(len(p.hchk))) == 1 {
 		if subtle.ConstantTimeCompare(p.hchk, p.Hash) == 1 {
 			return true, nil
 		}
