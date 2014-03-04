@@ -500,7 +500,7 @@ func BenchmarkCreateAndCheck(b *testing.B) {
 		if err := p.Create(); err != nil {
 			b.Errorf("%d: got unexpected error: %s", i, err)
 		}
-		if _, err = p.Check(); err != nil {
+		if _, err := p.Check(); err != nil {
 			b.Errorf("%d: got unexpected error: %s", i, err)
 		}
 	}
