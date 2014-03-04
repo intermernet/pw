@@ -406,9 +406,7 @@ var bad = []testPw{
 }
 
 func TestCreate(t *testing.T) {
-
 	p := New()
-
 	for i, v := range good {
 		p.Hmac, p.Pass, p.Salt = v.hmk, v.pw, v.salt
 		err := p.Create()
@@ -419,9 +417,7 @@ func TestCreate(t *testing.T) {
 }
 
 func TestCheck(t *testing.T) {
-
 	p := New()
-
 	for i, v := range good {
 		p.Hmac, p.Pass, p.Salt, p.Hash = v.hmk, v.pw, v.salt, v.h
 		chk, err := p.Check()
@@ -442,9 +438,7 @@ func TestCheck(t *testing.T) {
 }
 
 func TestCreateAndCheck(t *testing.T) {
-
 	p := New()
-
 	for i, v := range good {
 		p.Hmac, p.Pass, p.Salt = v.hmk, v.pw, v.salt
 		err := p.Create()
@@ -458,18 +452,14 @@ func TestCreateAndCheck(t *testing.T) {
 		if chk != true {
 			t.Errorf("%d: expected %x, got %x", i, v.output, chk)
 		}
-
 	}
 }
 
 func TestRandomCreateAndCheck(t *testing.T) {
-
 	p := New()
-
-	p.Hmac, _ = p.randHash(KEYLENGTH)
-	tmpPass, _ := p.randHash(KEYLENGTH)
-	p.Pass = string(tmpPass)
-	p.Salt, _ = p.randHash(KEYLENGTH)
+	p.randSalt()
+	p.Hash = p.Salt
+	p.Pass = string(p.Salt)
 	err := p.Create()
 	if err != nil {
 		t.Errorf("got unexpected error: %s", err)
@@ -487,8 +477,7 @@ func BenchmarkCreate(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		p := New()
 		p.Hmac, p.Pass, p.Salt = good[1].hmk, good[1].pw, good[1].salt
-		err := p.Create()
-		if err != nil {
+		if err := p.Create(); err != nil {
 			b.Errorf("%d: got unexpected error: %s", i, err)
 		}
 	}
@@ -498,8 +487,7 @@ func BenchmarkCheck(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		p := New()
 		p.Hmac, p.Pass, p.Salt, p.Hash = good[1].hmk, good[1].pw, good[1].salt, good[1].h
-		_, err := p.Check()
-		if err != nil {
+		if _, err := p.Check(); err != nil {
 			b.Errorf("%d: got unexpected error: %s", i, err)
 		}
 	}
@@ -509,12 +497,10 @@ func BenchmarkCreateAndCheck(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		p := New()
 		p.Hmac, p.Pass, p.Salt = good[1].hmk, good[1].pw, good[1].salt
-		err := p.Create()
-		if err != nil {
+		if err := p.Create(); err != nil {
 			b.Errorf("%d: got unexpected error: %s", i, err)
 		}
-		_, err = p.Check()
-		if err != nil {
+		if _, err = p.Check(); err != nil {
 			b.Errorf("%d: got unexpected error: %s", i, err)
 		}
 	}
