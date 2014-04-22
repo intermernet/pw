@@ -25,13 +25,14 @@ Use godoc [2] for documentation
 package pw
 
 import (
-	"code.google.com/p/go.crypto/scrypt"
 	"crypto/hmac"
 	"crypto/rand"
 	"crypto/sha256"
 	"crypto/subtle"
 	"errors"
 	"io"
+
+	"code.google.com/p/go.crypto/scrypt"
 )
 
 const (
@@ -67,17 +68,18 @@ func (p *PwHash) doHash() (err error) {
 		return err
 	}
 	hmh := hmac.New(sha256.New, p.Hmac)
+	defer hmh.Reset()
 	hmh.Write(sck)
 	p.hchk = hmh.Sum(nil)
 	return nil
 }
 
 // randHash generates a random slice of bytes using crypto/rand
-// of length l and returns it.
-func (p *PwHash) randHash(l int) (rh []byte, err error) {
+// of length KEYLENGTH and returns it.
+func (p *PwHash) randHash() (rh []byte, err error) {
 	rh = make([]byte, KEYLENGTH)
-	_, err = io.ReadFull(rand.Reader, rh)
-	if err != nil {
+	defer func() { rh = []byte{} }()
+	if _, err = io.ReadFull(rand.Reader, rh); err != nil {
 		return nil, err
 	}
 	return rh, nil
@@ -87,12 +89,11 @@ func (p *PwHash) randHash(l int) (rh []byte, err error) {
 // Create generates a new salt using "crypto/rand"
 // It then calls doHash() and sets the resulting hash and salt.
 func (p *PwHash) Create() (err error) {
-	p.Salt, err = p.randHash(KEYLENGTH)
+	p.Salt, err = p.randHash()
 	if err != nil {
 		return err
 	}
-	err = p.doHash()
-	if err != nil {
+	if err = p.doHash(); err != nil {
 		return err
 	}
 	p.Hash, p.hchk = p.hchk, []byte{} // Clear the hchk field.
@@ -103,8 +104,7 @@ func (p *PwHash) Create() (err error) {
 // Returns a boolean.
 func (p *PwHash) Check() (chk bool, err error) {
 	chkerr := errors.New("Error: Hash verification failed")
-	err = p.doHash()
-	if err != nil {
+	if err = p.doHash(); err != nil {
 		return false, err
 	}
 	if subtle.ConstantTimeEq(int32(len(p.Hash)), int32(len(p.hchk))) != 1 {

@@ -10,6 +10,8 @@ package pw
 
 import (
 	"testing"
+
+	"code.google.com/p/go.crypto/scrypt"
 )
 
 type testPw struct {
@@ -386,13 +388,11 @@ var good = []testPw{
 		emptyHash,
 		emptyString,
 		emptyHash,
-		//emptyHash, //wrong
 		[]byte{
 			0x8e, 0x1f, 0x9d, 0x8a, 0x51, 0x83, 0x3c, 0x69,
 			0x86, 0xae, 0xa0, 0xa, 0xe1, 0xf8, 0xe7, 0x82,
 			0x17, 0x82, 0xac, 0x7d, 0x94, 0x95, 0x5, 0xf4,
 			0x0, 0xbb, 0xb3, 0xe6, 0xcd, 0x44, 0xad, 0x89,
-			//0x01, 0xbb, 0xb3, 0xe6, 0xcd, 0x44, 0xad, 0x89, //wrong
 		},
 		true,
 	},
@@ -466,10 +466,10 @@ func TestRandomCreateAndCheck(t *testing.T) {
 
 	p := New()
 
-	p.Hmac, _ = p.randHash(KEYLENGTH)
-	tmpPass, _ := p.randHash(KEYLENGTH)
+	p.Hmac, _ = p.randHash()
+	tmpPass, _ := p.randHash()
 	p.Pass = string(tmpPass)
-	p.Salt, _ = p.randHash(KEYLENGTH)
+	p.Salt, _ = p.randHash()
 	err := p.Create()
 	if err != nil {
 		t.Errorf("got unexpected error: %s", err)
@@ -483,12 +483,19 @@ func TestRandomCreateAndCheck(t *testing.T) {
 	}
 }
 
+func TestScryptError(t *testing.T) {
+	p := New()
+	_, err := scrypt.Key([]byte(p.Pass), p.Salt, 0, 0, 0, 0)
+	if err == nil {
+		t.Errorf("got unexpected error: %s", err)
+	}
+}
+
 func BenchmarkCreate(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		p := New()
 		p.Hmac, p.Pass, p.Salt = good[1].hmk, good[1].pw, good[1].salt
-		err := p.Create()
-		if err != nil {
+		if err := p.Create(); err != nil {
 			b.Errorf("%d: got unexpected error: %s", i, err)
 		}
 	}
@@ -498,8 +505,7 @@ func BenchmarkCheck(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		p := New()
 		p.Hmac, p.Pass, p.Salt, p.Hash = good[1].hmk, good[1].pw, good[1].salt, good[1].h
-		_, err := p.Check()
-		if err != nil {
+		if _, err := p.Check(); err != nil {
 			b.Errorf("%d: got unexpected error: %s", i, err)
 		}
 	}
@@ -509,12 +515,10 @@ func BenchmarkCreateAndCheck(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		p := New()
 		p.Hmac, p.Pass, p.Salt = good[1].hmk, good[1].pw, good[1].salt
-		err := p.Create()
-		if err != nil {
+		if err := p.Create(); err != nil {
 			b.Errorf("%d: got unexpected error: %s", i, err)
 		}
-		_, err = p.Check()
-		if err != nil {
+		if _, err := p.Check(); err != nil {
 			b.Errorf("%d: got unexpected error: %s", i, err)
 		}
 	}
