@@ -466,10 +466,9 @@ func TestRandomCreateAndCheck(t *testing.T) {
 
 	p := New()
 
-	p.Hmac, _ = p.randHash()
-	tmpPass, _ := p.randHash()
+	_ = p.randSalt()
+	tmpPass := p.Salt
 	p.Pass = string(tmpPass)
-	p.Salt, _ = p.randHash()
 	err := p.Create()
 	if err != nil {
 		t.Errorf("got unexpected error: %s", err)
@@ -487,7 +486,15 @@ func TestScryptError(t *testing.T) {
 	p := New()
 	_, err := scrypt.Key([]byte(p.Pass), p.Salt, 0, 0, 0, 0)
 	if err == nil {
-		t.Errorf("got unexpected error: %s", err)
+		t.Errorf("Expected error, got %s", err)
+	}
+}
+
+func TestdoHashError(t *testing.T) {
+	p := New()
+	err := p.doHash()
+	if err == nil {
+		t.Errorf("Expected error, got %s", err)
 	}
 }
 
