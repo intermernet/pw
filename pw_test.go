@@ -402,6 +402,9 @@ var bad = []testPw{
 }
 
 func TestCreate(t *testing.T) {
+	if testing.Short() {
+		good = good[13:14]
+	}
 	ph := New()
 	for i, v := range good {
 		ph.Hmac, ph.Pass, ph.Salt = v.hmk, v.pw, v.salt
