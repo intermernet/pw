@@ -8,11 +8,7 @@
 
 package pw
 
-import (
-	"testing"
-
-	"code.google.com/p/go.crypto/scrypt"
-)
+import "testing"
 
 type testPw struct {
 	hmk    []byte // HMAC Key
@@ -406,12 +402,10 @@ var bad = []testPw{
 }
 
 func TestCreate(t *testing.T) {
-
-	p := New()
-
+	ph := New()
 	for i, v := range good {
-		p.Hmac, p.Pass, p.Salt = v.hmk, v.pw, v.salt
-		err := p.Create()
+		ph.Hmac, ph.Pass, ph.Salt = v.hmk, v.pw, v.salt
+		err := ph.Create()
 		if err != nil {
 			t.Errorf("%d: got unexpected error: %s", i, err)
 		}
@@ -419,12 +413,10 @@ func TestCreate(t *testing.T) {
 }
 
 func TestCheck(t *testing.T) {
-
-	p := New()
-
+	ph := New()
 	for i, v := range good {
-		p.Hmac, p.Pass, p.Salt, p.Hash = v.hmk, v.pw, v.salt, v.h
-		chk, err := p.Check()
+		ph.Hmac, ph.Pass, ph.Salt, ph.Hash = v.hmk, v.pw, v.salt, v.h
+		chk, err := ph.Check()
 		if err != nil {
 			t.Errorf("%d: got unexpected error: %s", i, err)
 		}
@@ -433,8 +425,8 @@ func TestCheck(t *testing.T) {
 		}
 	}
 	for i, v := range bad {
-		p.Hmac, p.Pass, p.Salt, p.Hash = v.hmk, v.pw, v.salt, v.h
-		chk, err := p.Check()
+		ph.Hmac, ph.Pass, ph.Salt, ph.Hash = v.hmk, v.pw, v.salt, v.h
+		chk, err := ph.Check()
 		if err == nil {
 			t.Errorf("%d: expected error, got nil, function returned %t", i, chk)
 		}
@@ -442,16 +434,14 @@ func TestCheck(t *testing.T) {
 }
 
 func TestCreateAndCheck(t *testing.T) {
-
-	p := New()
-
+	ph := New()
 	for i, v := range good {
-		p.Hmac, p.Pass, p.Salt = v.hmk, v.pw, v.salt
-		err := p.Create()
+		ph.Hmac, ph.Pass, ph.Salt = v.hmk, v.pw, v.salt
+		err := ph.Create()
 		if err != nil {
 			t.Errorf("%d: got unexpected error: %s", i, err)
 		}
-		chk, err := p.Check()
+		chk, err := ph.Check()
 		if err != nil {
 			t.Errorf("%d: got unexpected error: %s", i, err)
 		}
@@ -463,17 +453,15 @@ func TestCreateAndCheck(t *testing.T) {
 }
 
 func TestRandomCreateAndCheck(t *testing.T) {
-
-	p := New()
-
-	_ = p.randSalt()
-	tmpPass := p.Salt
-	p.Pass = string(tmpPass)
-	err := p.Create()
+	ph := New()
+	_ = ph.randSalt()
+	tmpPass := ph.Salt
+	ph.Pass = string(tmpPass)
+	err := ph.Create()
 	if err != nil {
 		t.Errorf("got unexpected error: %s", err)
 	}
-	chk, err := p.Check()
+	chk, err := ph.Check()
 	if err != nil {
 		t.Errorf("got unexpected error: %s", err)
 	}
@@ -482,27 +470,11 @@ func TestRandomCreateAndCheck(t *testing.T) {
 	}
 }
 
-func TestScryptError(t *testing.T) {
-	p := New()
-	_, err := scrypt.Key([]byte(p.Pass), p.Salt, 0, 0, 0, 0)
-	if err == nil {
-		t.Errorf("Expected error, got %s", err)
-	}
-}
-
-func TestdoHashError(t *testing.T) {
-	p := New()
-	err := p.doHash()
-	if err == nil {
-		t.Errorf("Expected error, got %s", err)
-	}
-}
-
 func BenchmarkCreate(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		p := New()
-		p.Hmac, p.Pass, p.Salt = good[1].hmk, good[1].pw, good[1].salt
-		if err := p.Create(); err != nil {
+		ph := New()
+		ph.Hmac, ph.Pass, ph.Salt = good[1].hmk, good[1].pw, good[1].salt
+		if err := ph.Create(); err != nil {
 			b.Errorf("%d: got unexpected error: %s", i, err)
 		}
 	}
@@ -510,9 +482,9 @@ func BenchmarkCreate(b *testing.B) {
 
 func BenchmarkCheck(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		p := New()
-		p.Hmac, p.Pass, p.Salt, p.Hash = good[1].hmk, good[1].pw, good[1].salt, good[1].h
-		if _, err := p.Check(); err != nil {
+		ph := New()
+		ph.Hmac, ph.Pass, ph.Salt, ph.Hash = good[1].hmk, good[1].pw, good[1].salt, good[1].h
+		if _, err := ph.Check(); err != nil {
 			b.Errorf("%d: got unexpected error: %s", i, err)
 		}
 	}
@@ -520,12 +492,12 @@ func BenchmarkCheck(b *testing.B) {
 
 func BenchmarkCreateAndCheck(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		p := New()
-		p.Hmac, p.Pass, p.Salt = good[1].hmk, good[1].pw, good[1].salt
-		if err := p.Create(); err != nil {
+		ph := New()
+		ph.Hmac, ph.Pass, ph.Salt = good[1].hmk, good[1].pw, good[1].salt
+		if err := ph.Create(); err != nil {
 			b.Errorf("%d: got unexpected error: %s", i, err)
 		}
-		if _, err := p.Check(); err != nil {
+		if _, err := ph.Check(); err != nil {
 			b.Errorf("%d: got unexpected error: %s", i, err)
 		}
 	}

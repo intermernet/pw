@@ -6,7 +6,7 @@ pw is a Go library for password authentication
 It attempts to put into practice the methodology described in CrackStation's "Salted Password
 Hashing - Doing it Right". [1]
 
-It uses scrypt for key stretching, and assumes the use of an HMAC key for extra security.
+It uses the scrypt KDF for key stretching, and assumes the use of an HMAC key for extra security.
 
 The HMAC key should be provided from somewhere outside of the database which stores the user IDs,
 hashes and salts. It should, at least, be stored in a secure file on the server, but it's
@@ -60,39 +60,39 @@ type PwHash struct {
 func New() *PwHash { return new(PwHash) }
 
 // doHash scrypt transforms the password and salt, and then HMAC transforms the result.
-// Returns the resulting 256 bit hash.
-func (p *PwHash) doHash() error {
-	sck, err := scrypt.Key([]byte(p.Pass), p.Salt, N, R, P, KEYLENGTH)
+// and sets it as the check-hash.
+func (ph *PwHash) doHash() error {
+	sck, err := scrypt.Key([]byte(ph.Pass), ph.Salt, N, R, P, KEYLENGTH)
 	if err != nil {
 		return err
 	}
-	hmh := hmac.New(sha256.New, p.Hmac)
+	hmh := hmac.New(sha256.New, ph.Hmac)
 	defer hmh.Reset()
 	hmh.Write(sck)
-	p.hchk = hmh.Sum(nil)
+	ph.hchk = hmh.Sum(nil)
 	return nil
 }
 
 // randSalt generates a random slice of bytes using crypto/rand
-// of length KEYLENGTH and sets it as the salt
-func (p *PwHash) randSalt() error {
+// of length KEYLENGTH and sets it as the salt.
+func (ph *PwHash) randSalt() error {
 	rh := make([]byte, KEYLENGTH)
 	defer func() { rh = []byte{} }() // Clear the salt
 	if _, err := rand.Read(rh); err != nil {
 		return err
 	}
-	p.Salt = rh
+	ph.Salt = rh
 	return nil
 }
 
 // Create generates a new salt using "crypto/rand"
 // It then calls doHash() and sets the resulting hash and salt.
-func (p *PwHash) Create() error {
-	defer func() { p.Hash, p.hchk = p.hchk, []byte{} }() // Clear the hchk field.
-	if err := p.randSalt(); err != nil {
+func (ph *PwHash) Create() error {
+	defer func() { ph.Hash, ph.hchk = ph.hchk, []byte{} }() // Clear the hchk field.
+	if err := ph.randSalt(); err != nil {
 		return err
 	}
-	if err := p.doHash(); err != nil {
+	if err := ph.doHash(); err != nil {
 		return err
 	}
 	return nil
@@ -100,14 +100,14 @@ func (p *PwHash) Create() error {
 
 // Check calls doHash() and compares the resulting hash against the check hash.
 // Returns a boolean.
-func (p *PwHash) Check() (bool, error) {
-	defer func() { p.Hash, p.hchk = []byte{}, []byte{} }() // Clear the Hash and hchk fields.
-	chkerr := errors.New("Error: Hash verification failed")
-	if err := p.doHash(); err != nil {
+func (ph *PwHash) Check() (bool, error) {
+	defer func() { ph.Hash, ph.hchk = []byte{}, []byte{} }() // Clear the Hash and hchk fields.
+	chkerr := errors.New("hash verification failed")
+	if err := ph.doHash(); err != nil {
 		return false, err
 	}
-	if subtle.ConstantTimeEq(int32(len(p.Hash)), int32(len(p.hchk))) == 1 {
-		if subtle.ConstantTimeCompare(p.hchk, p.Hash) == 1 {
+	if subtle.ConstantTimeEq(int32(len(ph.Hash)), int32(len(ph.hchk))) == 1 {
+		if subtle.ConstantTimeCompare(ph.hchk, ph.Hash) == 1 {
 			return true, nil
 		}
 	}
