@@ -30,7 +30,6 @@ import (
 	"crypto/sha256"
 	"crypto/subtle"
 	"errors"
-	"io"
 
 	"code.google.com/p/go.crypto/scrypt"
 )
@@ -78,8 +77,8 @@ func (p *PwHash) doHash() error {
 // of length KEYLENGTH and sets it as the salt
 func (p *PwHash) randSalt() error {
 	rh := make([]byte, KEYLENGTH)
-	defer func() { rh = []byte{} }()
-	if _, err := io.ReadFull(rand.Reader, rh); err != nil {
+	defer func() { rh = []byte{} }() // Clear the salt
+	if _, err := rand.Read(rh); err != nil {
 		return err
 	}
 	p.Salt = rh
@@ -89,19 +88,20 @@ func (p *PwHash) randSalt() error {
 // Create generates a new salt using "crypto/rand"
 // It then calls doHash() and sets the resulting hash and salt.
 func (p *PwHash) Create() error {
+	defer func() { p.Hash, p.hchk = p.hchk, []byte{} }() // Clear the hchk field.
 	if err := p.randSalt(); err != nil {
 		return err
 	}
 	if err := p.doHash(); err != nil {
 		return err
 	}
-	p.Hash, p.hchk = p.hchk, []byte{} // Clear the hchk field.
 	return nil
 }
 
 // Check calls doHash() and compares the resulting hash against the check hash.
 // Returns a boolean.
 func (p *PwHash) Check() (bool, error) {
+	defer func() { p.Hash, p.hchk = []byte{}, []byte{} }() // Clear the Hash and hchk fields.
 	chkerr := errors.New("Error: Hash verification failed")
 	if err := p.doHash(); err != nil {
 		return false, err
@@ -112,6 +112,5 @@ func (p *PwHash) Check() (bool, error) {
 	if subtle.ConstantTimeCompare(p.hchk, p.Hash) != 1 {
 		return false, chkerr
 	}
-	p.Hash, p.hchk = []byte{}, []byte{} // Clear the Hash and hchk fields.
 	return true, nil
 }
