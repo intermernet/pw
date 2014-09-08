@@ -106,8 +106,10 @@ func (ph *PwHash) Check() (bool, error) {
 	if err := ph.doHash(); err != nil {
 		return false, err
 	}
-	if subtle.ConstantTimeCompare(ph.hchk, ph.Hash) != 1 {
-		return false, chkerr
+	if subtle.ConstantTimeEq(int32(len(ph.Hash)), int32(len(ph.hchk))) == 1 {
+		if subtle.ConstantTimeCompare(ph.hchk, ph.Hash) == 1 {
+			return true, nil
+		}
 	}
-	return true, nil
+	return false, chkerr
 }

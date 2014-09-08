@@ -424,7 +424,7 @@ func TestCheck(t *testing.T) {
 			t.Errorf("%d: got unexpected error: %s", i, err)
 		}
 		if chk != true {
-			t.Errorf("%d: expected %x, got %x", i, v.output, chk)
+			t.Errorf("%d: expected %t, got %t", i, v.output, chk)
 		}
 	}
 	for i, v := range bad {
@@ -449,7 +449,7 @@ func TestCreateAndCheck(t *testing.T) {
 			t.Errorf("%d: got unexpected error: %s", i, err)
 		}
 		if chk != true {
-			t.Errorf("%d: expected %x, got %x", i, v.output, chk)
+			t.Errorf("%d: expected %t, got %t", i, v.output, chk)
 		}
 
 	}
@@ -469,7 +469,7 @@ func TestRandomCreateAndCheck(t *testing.T) {
 		t.Errorf("got unexpected error: %s", err)
 	}
 	if chk != true {
-		t.Errorf("expected %x, got %x", true, chk)
+		t.Errorf("expected %t, got %t", true, chk)
 	}
 }
 
