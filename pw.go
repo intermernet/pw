@@ -4,7 +4,7 @@ Package pw is a Go library for password authentication.
 It attempts to put into practice the methodology described in CrackStation's "Salted Password
 Hashing - Doing it Right". [1]
 
-It uses scrypt for key stretching, and assumes the use of an HMAC key for extra security.
+It uses the scrypt KDF for key stretching, and assumes the use of an HMAC key for extra security.
 
 The HMAC key should be provided from somewhere outside of the database which stores the user IDs,
 hashes and salts. It should, at least, be stored in a secure file on the server, but it's

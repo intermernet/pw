@@ -7,9 +7,7 @@
 
 package pw
 
-import (
-	"testing"
-)
+import "testing"
 
 type testPw struct {
 	hmk    []byte // HMAC Key
@@ -385,13 +383,11 @@ var good = []testPw{
 		emptyHash,
 		emptyString,
 		emptyHash,
-		//emptyHash, //wrong
 		[]byte{
 			0x8e, 0x1f, 0x9d, 0x8a, 0x51, 0x83, 0x3c, 0x69,
 			0x86, 0xae, 0xa0, 0xa, 0xe1, 0xf8, 0xe7, 0x82,
 			0x17, 0x82, 0xac, 0x7d, 0x94, 0x95, 0x5, 0xf4,
 			0x0, 0xbb, 0xb3, 0xe6, 0xcd, 0x44, 0xad, 0x89,
-			//0x01, 0xbb, 0xb3, 0xe6, 0xcd, 0x44, 0xad, 0x89, //wrong
 		},
 		true,
 	},
@@ -405,10 +401,13 @@ var bad = []testPw{
 }
 
 func TestCreate(t *testing.T) {
-	p := New()
+	if testing.Short() {
+		good = good[13:14]
+	}
+	ph := New()
 	for i, v := range good {
-		p.Hmac, p.Pass, p.Salt = v.hmk, v.pw, v.salt
-		err := p.Create()
+		ph.Hmac, ph.Pass, ph.Salt = v.hmk, v.pw, v.salt
+		err := ph.Create()
 		if err != nil {
 			t.Errorf("%d: got unexpected error: %s", i, err)
 		}
@@ -416,20 +415,20 @@ func TestCreate(t *testing.T) {
 }
 
 func TestCheck(t *testing.T) {
-	p := New()
+	ph := New()
 	for i, v := range good {
-		p.Hmac, p.Pass, p.Salt, p.Hash = v.hmk, v.pw, v.salt, v.h
-		chk, err := p.Check()
+		ph.Hmac, ph.Pass, ph.Salt, ph.Hash = v.hmk, v.pw, v.salt, v.h
+		chk, err := ph.Check()
 		if err != nil {
 			t.Errorf("%d: got unexpected error: %s", i, err)
 		}
 		if chk != true {
-			t.Errorf("%d: expected %x, got %x", i, v.output, chk)
+			t.Errorf("%d: expected %t, got %t", i, v.output, chk)
 		}
 	}
 	for i, v := range bad {
-		p.Hmac, p.Pass, p.Salt, p.Hash = v.hmk, v.pw, v.salt, v.h
-		chk, err := p.Check()
+		ph.Hmac, ph.Pass, ph.Salt, ph.Hash = v.hmk, v.pw, v.salt, v.h
+		chk, err := ph.Check()
 		if err == nil {
 			t.Errorf("%d: expected error, got nil, function returned %t", i, chk)
 		}
@@ -437,46 +436,46 @@ func TestCheck(t *testing.T) {
 }
 
 func TestCreateAndCheck(t *testing.T) {
-	p := New()
+	ph := New()
 	for i, v := range good {
-		p.Hmac, p.Pass, p.Salt = v.hmk, v.pw, v.salt
-		err := p.Create()
+		ph.Hmac, ph.Pass, ph.Salt = v.hmk, v.pw, v.salt
+		err := ph.Create()
 		if err != nil {
 			t.Errorf("%d: got unexpected error: %s", i, err)
 		}
-		chk, err := p.Check()
+		chk, err := ph.Check()
 		if err != nil {
 			t.Errorf("%d: got unexpected error: %s", i, err)
 		}
 		if chk != true {
-			t.Errorf("%d: expected %x, got %x", i, v.output, chk)
+			t.Errorf("%d: expected %t, got %t", i, v.output, chk)
 		}
 	}
 }
 
 func TestRandomCreateAndCheck(t *testing.T) {
-	p := New()
-	p.randSalt()
-	p.Hash = p.Salt
-	p.Pass = string(p.Salt)
-	err := p.Create()
+	ph := New()
+	_ = ph.randSalt()
+	tmpPass := ph.Salt
+	ph.Pass = string(tmpPass)
+	err := ph.Create()
 	if err != nil {
 		t.Errorf("got unexpected error: %s", err)
 	}
-	chk, err := p.Check()
+	chk, err := ph.Check()
 	if err != nil {
 		t.Errorf("got unexpected error: %s", err)
 	}
 	if chk != true {
-		t.Errorf("expected %x, got %x", true, chk)
+		t.Errorf("expected %t, got %t", true, chk)
 	}
 }
 
 func BenchmarkCreate(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		p := New()
-		p.Hmac, p.Pass, p.Salt = good[1].hmk, good[1].pw, good[1].salt
-		if err := p.Create(); err != nil {
+		ph := New()
+		ph.Hmac, ph.Pass, ph.Salt = good[1].hmk, good[1].pw, good[1].salt
+		if err := ph.Create(); err != nil {
 			b.Errorf("%d: got unexpected error: %s", i, err)
 		}
 	}
@@ -484,9 +483,9 @@ func BenchmarkCreate(b *testing.B) {
 
 func BenchmarkCheck(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		p := New()
-		p.Hmac, p.Pass, p.Salt, p.Hash = good[1].hmk, good[1].pw, good[1].salt, good[1].h
-		if _, err := p.Check(); err != nil {
+		ph := New()
+		ph.Hmac, ph.Pass, ph.Salt, ph.Hash = good[1].hmk, good[1].pw, good[1].salt, good[1].h
+		if _, err := ph.Check(); err != nil {
 			b.Errorf("%d: got unexpected error: %s", i, err)
 		}
 	}
@@ -494,12 +493,12 @@ func BenchmarkCheck(b *testing.B) {
 
 func BenchmarkCreateAndCheck(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		p := New()
-		p.Hmac, p.Pass, p.Salt = good[1].hmk, good[1].pw, good[1].salt
-		if err := p.Create(); err != nil {
+		ph := New()
+		ph.Hmac, ph.Pass, ph.Salt = good[1].hmk, good[1].pw, good[1].salt
+		if err := ph.Create(); err != nil {
 			b.Errorf("%d: got unexpected error: %s", i, err)
 		}
-		if _, err := p.Check(); err != nil {
+		if _, err := ph.Check(); err != nil {
 			b.Errorf("%d: got unexpected error: %s", i, err)
 		}
 	}
