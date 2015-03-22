@@ -404,10 +404,10 @@ func TestCreate(t *testing.T) {
 	if testing.Short() {
 		good = good[13:14]
 	}
-	ph := New()
+	id := New()
 	for i, v := range good {
-		ph.Hmac, ph.Pass, ph.Salt = v.hmk, v.pw, v.salt
-		err := ph.Create()
+		id.Hmac, id.Pass, id.Salt = v.hmk, v.pw, v.salt
+		err := id.Create()
 		if err != nil {
 			t.Errorf("%d: got unexpected error: %s", i, err)
 		}
@@ -415,10 +415,10 @@ func TestCreate(t *testing.T) {
 }
 
 func TestCheck(t *testing.T) {
-	ph := New()
+	id := New()
 	for i, v := range good {
-		ph.Hmac, ph.Pass, ph.Salt, ph.Hash = v.hmk, v.pw, v.salt, v.h
-		chk, err := ph.Check()
+		id.Hmac, id.Pass, id.Salt, id.Hash = v.hmk, v.pw, v.salt, v.h
+		chk, err := id.Check()
 		if err != nil {
 			t.Errorf("%d: got unexpected error: %s", i, err)
 		}
@@ -427,8 +427,8 @@ func TestCheck(t *testing.T) {
 		}
 	}
 	for i, v := range bad {
-		ph.Hmac, ph.Pass, ph.Salt, ph.Hash = v.hmk, v.pw, v.salt, v.h
-		chk, err := ph.Check()
+		id.Hmac, id.Pass, id.Salt, id.Hash = v.hmk, v.pw, v.salt, v.h
+		chk, err := id.Check()
 		if err == nil {
 			t.Errorf("%d: expected error, got nil, function returned %t", i, chk)
 		}
@@ -436,14 +436,14 @@ func TestCheck(t *testing.T) {
 }
 
 func TestCreateAndCheck(t *testing.T) {
-	ph := New()
+	id := New()
 	for i, v := range good {
-		ph.Hmac, ph.Pass, ph.Salt = v.hmk, v.pw, v.salt
-		err := ph.Create()
+		id.Hmac, id.Pass, id.Salt = v.hmk, v.pw, v.salt
+		err := id.Create()
 		if err != nil {
 			t.Errorf("%d: got unexpected error: %s", i, err)
 		}
-		chk, err := ph.Check()
+		chk, err := id.Check()
 		if err != nil {
 			t.Errorf("%d: got unexpected error: %s", i, err)
 		}
@@ -454,15 +454,15 @@ func TestCreateAndCheck(t *testing.T) {
 }
 
 func TestRandomCreateAndCheck(t *testing.T) {
-	ph := New()
-	_ = ph.randSalt()
-	tmpPass := ph.Salt
-	ph.Pass = string(tmpPass)
-	err := ph.Create()
+	id := New()
+	_ = id.randSalt()
+	tmpPass := id.Salt
+	id.Pass = string(tmpPass)
+	err := id.Create()
 	if err != nil {
 		t.Errorf("got unexpected error: %s", err)
 	}
-	chk, err := ph.Check()
+	chk, err := id.Check()
 	if err != nil {
 		t.Errorf("got unexpected error: %s", err)
 	}
@@ -473,9 +473,9 @@ func TestRandomCreateAndCheck(t *testing.T) {
 
 func BenchmarkCreate(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		ph := New()
-		ph.Hmac, ph.Pass, ph.Salt = good[1].hmk, good[1].pw, good[1].salt
-		if err := ph.Create(); err != nil {
+		id := New()
+		id.Hmac, id.Pass, id.Salt = good[1].hmk, good[1].pw, good[1].salt
+		if err := id.Create(); err != nil {
 			b.Errorf("%d: got unexpected error: %s", i, err)
 		}
 	}
@@ -483,9 +483,9 @@ func BenchmarkCreate(b *testing.B) {
 
 func BenchmarkCheck(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		ph := New()
-		ph.Hmac, ph.Pass, ph.Salt, ph.Hash = good[1].hmk, good[1].pw, good[1].salt, good[1].h
-		if _, err := ph.Check(); err != nil {
+		id := New()
+		id.Hmac, id.Pass, id.Salt, id.Hash = good[1].hmk, good[1].pw, good[1].salt, good[1].h
+		if _, err := id.Check(); err != nil {
 			b.Errorf("%d: got unexpected error: %s", i, err)
 		}
 	}
@@ -493,12 +493,12 @@ func BenchmarkCheck(b *testing.B) {
 
 func BenchmarkCreateAndCheck(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		ph := New()
-		ph.Hmac, ph.Pass, ph.Salt = good[1].hmk, good[1].pw, good[1].salt
-		if err := ph.Create(); err != nil {
+		id := New()
+		id.Hmac, id.Pass, id.Salt = good[1].hmk, good[1].pw, good[1].salt
+		if err := id.Create(); err != nil {
 			b.Errorf("%d: got unexpected error: %s", i, err)
 		}
-		if _, err := ph.Check(); err != nil {
+		if _, err := id.Check(); err != nil {
 			b.Errorf("%d: got unexpected error: %s", i, err)
 		}
 	}

@@ -57,7 +57,7 @@ type ID struct {
 	hchk []byte // Hash to compare against
 }
 
-// New returns a new pwHash.
+// New returns a new ID.
 func New() *ID { return new(ID) }
 
 // doHash scrypt transforms the password and salt, and then HMAC transforms the result.
