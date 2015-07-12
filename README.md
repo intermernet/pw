@@ -1,4 +1,4 @@
-[![GoDoc](https://godoc.org/github.com/Intermernet/pw?status.png)](https://godoc.org/github.com/Intermernet/pw) [![Build Status](https://drone.io/github.com/Intermernet/pw/status.png)](https://drone.io/github.com/Intermernet/pw/latest) [![Coverage Status](https://coveralls.io/repos/Intermernet/pw/badge.png?branch=master)](https://coveralls.io/r/Intermernet/pw?branch=master)
+[![GoDoc](https://godoc.org/github.com/Intermernet/pw?status.png)](https://godoc.org/github.com/Intermernet/pw) [![Build Status](https://drone.io/github.com/Intermernet/pw/status.png)](https://drone.io/github.com/Intermernet/pw/latest) [![Coverage Status](https://coveralls.io/repos/Intermernet/pw/badge.png?branch=maste)](https://coveralls.io/r/Intermernet/pw?branch=master)
 
 pw is a Go library for password authentication
 
