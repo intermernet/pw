@@ -15,7 +15,7 @@
 //
 // Use godoc [2] for documentation.
 //
-// Copyright Mike Hughes 201 - 2015 (intermernet AT gmail DOT com).
+// Copyright Mike Hughes 2012 - 2015 (intermernet AT gmail DOT com).
 //
 // [1] http://crackstation.net/hashing-security.htm
 //
