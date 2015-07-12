@@ -120,6 +120,10 @@ func (i *ID) randSalt() error {
 //
 // It generates a new salt using "crypto/rand"
 // and then sets the resulting hash and salt.
+//
+// Users should store ID.Hash and ID.Salt, and ensure that ID.Hmac is stored
+// in a separate location (This is best practice, but not required for some
+// purposes. You can leave ID.Hmac empty but you will lose some security).
 func (i *ID) Set() error {
 	defer func() { i.Hash, i.hchk = i.hchk, []byte{} }() // Set Hash, clear hchk
 	if err := i.randSalt(); err != nil {
@@ -131,9 +135,8 @@ func (i *ID) Set() error {
 	return nil
 }
 
-// Check compares the supplied hash against the check hash and
-// returns a boolean.
-func (i *ID) Check() (bool, error) {
+// Verify returns true if the supplied ID.Pass, ID.Hmac and ID.Hash are valid.
+func (i *ID) Verify() (bool, error) {
 	defer func() { i.Hash, i.hchk = []byte{}, []byte{} }() // Clear Hash and hchk
 	if err := i.doHash(); err != nil {
 		return false, err

@@ -427,7 +427,7 @@ func TestCheck(t *testing.T) {
 	id := New()
 	for i, v := range good {
 		id.Pass, id.Hmac, id.Salt, id.Hash = v.pw, v.hmk, v.salt, v.h
-		chk, err := id.Check()
+		chk, err := id.Verify()
 		if err != nil {
 			t.Errorf("%d: got unexpected error: %s", i, err)
 		}
@@ -437,14 +437,14 @@ func TestCheck(t *testing.T) {
 	}
 	for i, v := range bad {
 		id.Pass, id.Hmac, id.Salt, id.Hash = v.pw, v.hmk, v.salt, v.h
-		chk, err := id.Check()
+		chk, err := id.Verify()
 		if err == nil {
 			t.Errorf("%d: expected error, got nil, function returned %t", i, chk)
 		}
 	}
 	// Invalid Scrypt variables
 	id.N, id.R, id.P = 0, 0, 0
-	if _, err := id.Check(); err == nil {
+	if _, err := id.Verify(); err == nil {
 		t.Errorf("expected err, got nil")
 	}
 }
@@ -456,7 +456,7 @@ func TestSetAndCheck(t *testing.T) {
 		if err := id.Set(); err != nil {
 			t.Errorf("got unexpected error: %v", err)
 		}
-		chk, err := id.Check()
+		chk, err := id.Verify()
 		if err != nil {
 			t.Errorf("%d: got unexpected error: %s", i, err)
 		}
@@ -476,7 +476,7 @@ func TestRandomSetAndCheck(t *testing.T) {
 	if err := id.Set(); err != nil {
 		t.Errorf("got unexpected error: %v", err)
 	}
-	chk, err := id.Check()
+	chk, err := id.Verify()
 	if err != nil {
 		t.Errorf("got unexpected error: %s", err)
 	}
@@ -491,7 +491,7 @@ func TestRandSalt(t *testing.T) {
 	if err := id.Set(); err != nil && err != io.EOF {
 		t.Errorf("got unexpected error: %v", err)
 	}
-	if _, err := id.Check(); err == nil {
+	if _, err := id.Verify(); err == nil {
 		t.Errorf("expected err, got nil")
 	}
 }
@@ -519,7 +519,7 @@ func BenchmarkCheck(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		id := New()
 		id.Pass, id.Hmac, id.Salt, id.Hash = good[1].pw, good[1].hmk, good[1].salt, good[1].h
-		if _, err := id.Check(); err != nil {
+		if _, err := id.Verify(); err != nil {
 			b.Errorf("%d: got unexpected error: %s", i, err)
 		}
 	}
@@ -532,7 +532,7 @@ func BenchmarkSetAndCheck(b *testing.B) {
 		if err := id.Set(); err == nil {
 			b.Errorf("expected %v, got nil", err)
 		}
-		if _, err := id.Check(); err != nil {
+		if _, err := id.Verify(); err != nil {
 			b.Errorf("%d: got unexpected error: %s", i, err)
 		}
 	}
