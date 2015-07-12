@@ -51,9 +51,15 @@ var (
 )
 
 // ID contains the HMAC, the password, the salt and the hash to check.
-// scrypt variables from https://golang.org/x/crypto/scrypt
+//
+// Description of scrypt variables from https://golang.org/x/crypto/scrypt
+//
 // "N is a CPU/memory cost parameter, which must be a power of two greater than 1.
 // R and P must satisfy R * P < 2³⁰."
+//
+// These were valid @ 2009 and should be increased as CPU power increases.
+// Please see http://www.tarsnap.com/scrypt.html for details.
+//
 // Defaults are  N = 16384, R = 8, P = 1
 type ID struct {
 	Pass    string // Password
@@ -98,9 +104,11 @@ func (i *ID) randSalt() error {
 	return nil
 }
 
-// Create generates a new salt using "crypto/rand".
-// It then calls doHash() and sets the resulting hash and salt.
-func (i *ID) Create() error {
+// Set Initializes an ID with a password and an HMAC.
+//
+// It generates a new salt using "crypto/rand"
+// and then sets the resulting hash and salt.
+func (i *ID) Set() error {
 	defer func() { i.Hash, i.hchk = i.hchk, []byte{} }() // Set Hash, clear hchk
 	if err := i.randSalt(); err != nil {
 		return err
@@ -111,8 +119,8 @@ func (i *ID) Create() error {
 	return nil
 }
 
-// Check calls doHash() and compares the resulting hash against the check hash.
-// Returns a boolean.
+// Check compares the supplied hash against the check hash and
+// returns a boolean.
 func (i *ID) Check() (bool, error) {
 	defer func() { i.Hash, i.hchk = []byte{}, []byte{} }() // Clear Hash and hchk
 	if err := i.doHash(); err != nil {

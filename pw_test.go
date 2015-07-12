@@ -405,20 +405,20 @@ var bad = []testPw{
 	{passNorm, hmacNorm, saltNorm, hashNorm, true},       // Normal input, Wrong output
 }
 
-func TestCreate(t *testing.T) {
+func TestSet(t *testing.T) {
 	if testing.Short() {
 		good = good[13:14]
 	}
 	id := New()
 	for _, v := range good {
 		id.Pass, id.Hmac, id.Salt = v.pw, v.hmk, v.salt
-		if err := id.Create(); err != nil {
+		if err := id.Set(); err != nil {
 			t.Errorf("got unexpected error: %v", err)
 		}
 	}
 	// Invalid Scrypt variables
 	id.N, id.R, id.P = 0, 0, 0
-	if err := id.Create(); err == nil {
+	if err := id.Set(); err == nil {
 		t.Errorf("expected err, got nil")
 	}
 }
@@ -449,11 +449,11 @@ func TestCheck(t *testing.T) {
 	}
 }
 
-func TestCreateAndCheck(t *testing.T) {
+func TestSetAndCheck(t *testing.T) {
 	id := New()
 	for i, v := range good {
 		id.Pass, id.Hmac, id.Salt = v.pw, v.hmk, v.salt
-		if err := id.Create(); err != nil {
+		if err := id.Set(); err != nil {
 			t.Errorf("got unexpected error: %v", err)
 		}
 		chk, err := id.Check()
@@ -466,14 +466,14 @@ func TestCreateAndCheck(t *testing.T) {
 	}
 }
 
-func TestRandomCreateAndCheck(t *testing.T) {
+func TestRandomSetAndCheck(t *testing.T) {
 	id := New()
 	if err := id.randSalt(); err != nil {
 		t.Errorf("got unexpected error: %v", err)
 	}
 	tmpPass := id.Salt
 	id.Pass = string(tmpPass)
-	if err := id.Create(); err != nil {
+	if err := id.Set(); err != nil {
 		t.Errorf("got unexpected error: %v", err)
 	}
 	chk, err := id.Check()
@@ -488,7 +488,7 @@ func TestRandomCreateAndCheck(t *testing.T) {
 func TestRandSalt(t *testing.T) {
 	id := New()
 	randSrc = io.LimitReader(rand.Reader, 0)
-	if err := id.Create(); err != nil && err != io.EOF {
+	if err := id.Set(); err != nil && err != io.EOF {
 		t.Errorf("got unexpected error: %v", err)
 	}
 	if _, err := id.Check(); err == nil {
@@ -505,11 +505,11 @@ func TestScrypt(t *testing.T) {
 	}
 }
 
-func BenchmarkCreate(b *testing.B) {
+func BenchmarkSet(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		id := New()
 		id.Pass, id.Hmac, id.Salt = good[1].pw, good[1].hmk, good[1].salt
-		if err := id.Create(); err == nil {
+		if err := id.Set(); err == nil {
 			b.Errorf("expected err, got nil")
 		}
 	}
@@ -525,11 +525,11 @@ func BenchmarkCheck(b *testing.B) {
 	}
 }
 
-func BenchmarkCreateAndCheck(b *testing.B) {
+func BenchmarkSetAndCheck(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		id := New()
 		id.Pass, id.Hmac, id.Salt = good[1].pw, good[1].hmk, good[1].salt
-		if err := id.Create(); err == nil {
+		if err := id.Set(); err == nil {
 			b.Errorf("expected %v, got nil", err)
 		}
 		if _, err := id.Check(); err != nil {
