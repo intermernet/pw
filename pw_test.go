@@ -7,7 +7,11 @@
 
 package pw
 
-import "testing"
+import (
+	"crypto/rand"
+	"io"
+	"testing"
+)
 
 type testPw struct {
 	hmk    []byte // HMAC Key
@@ -405,12 +409,15 @@ func TestCreate(t *testing.T) {
 		good = good[13:14]
 	}
 	id := New()
-	for i, v := range good {
+	for _, v := range good {
 		id.Hmac, id.Pass, id.Salt = v.hmk, v.pw, v.salt
-		err := id.Create()
-		if err != nil {
-			t.Errorf("%d: got unexpected error: %s", i, err)
+		if err := id.Create(); err != nil {
+			t.Errorf("got unexpected error: %v", err)
 		}
+	}
+	id.n, id.r, id.p = 0, 0, 0
+	if err := id.Create(); err == nil {
+		t.Errorf("expected err, got nil")
 	}
 }
 
@@ -433,15 +440,18 @@ func TestCheck(t *testing.T) {
 			t.Errorf("%d: expected error, got nil, function returned %t", i, chk)
 		}
 	}
+	id.n, id.r, id.p = 0, 0, 0
+	if _, err := id.Check(); err == nil {
+		t.Errorf("expected err, got nil")
+	}
 }
 
 func TestCreateAndCheck(t *testing.T) {
 	id := New()
 	for i, v := range good {
 		id.Hmac, id.Pass, id.Salt = v.hmk, v.pw, v.salt
-		err := id.Create()
-		if err != nil {
-			t.Errorf("%d: got unexpected error: %s", i, err)
+		if err := id.Create(); err != nil {
+			t.Errorf("got unexpected error: %v", err)
 		}
 		chk, err := id.Check()
 		if err != nil {
@@ -455,12 +465,13 @@ func TestCreateAndCheck(t *testing.T) {
 
 func TestRandomCreateAndCheck(t *testing.T) {
 	id := New()
-	_ = id.randSalt()
+	if err := id.randSalt(); err != nil {
+		t.Errorf("got unexpected error: %v", err)
+	}
 	tmpPass := id.Salt
 	id.Pass = string(tmpPass)
-	err := id.Create()
-	if err != nil {
-		t.Errorf("got unexpected error: %s", err)
+	if err := id.Create(); err != nil {
+		t.Errorf("got unexpected error: %v", err)
 	}
 	chk, err := id.Check()
 	if err != nil {
@@ -471,12 +482,31 @@ func TestRandomCreateAndCheck(t *testing.T) {
 	}
 }
 
+func TestRandSalt(t *testing.T) {
+	id := New()
+	randSrc = io.LimitReader(rand.Reader, 0)
+	if err := id.Create(); err != nil && err != io.EOF {
+		t.Errorf("got unexpected error: %v", err)
+	}
+	if _, err := id.Check(); err == nil {
+		t.Errorf("expected err, got nil")
+	}
+}
+
+func TestScrypt(t *testing.T) {
+	id := New()
+	id.n, id.r, id.p = 0, 0, 0
+	if err := id.doHash(); err == nil {
+		t.Errorf("expected err, got nil")
+	}
+}
+
 func BenchmarkCreate(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		id := New()
 		id.Hmac, id.Pass, id.Salt = good[1].hmk, good[1].pw, good[1].salt
-		if err := id.Create(); err != nil {
-			b.Errorf("%d: got unexpected error: %s", i, err)
+		if err := id.Create(); err == nil {
+			b.Errorf("expected err, got nil")
 		}
 	}
 }
@@ -495,8 +525,8 @@ func BenchmarkCreateAndCheck(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		id := New()
 		id.Hmac, id.Pass, id.Salt = good[1].hmk, good[1].pw, good[1].salt
-		if err := id.Create(); err != nil {
-			b.Errorf("%d: got unexpected error: %s", i, err)
+		if err := id.Create(); err == nil {
+			b.Errorf("expected %v, got nil", err)
 		}
 		if _, err := id.Check(); err != nil {
 			b.Errorf("%d: got unexpected error: %s", i, err)

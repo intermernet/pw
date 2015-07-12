@@ -37,7 +37,7 @@ import (
 
 const (
 	// Key length and salt length will be 32 bytes (256 bits)
-	keyLength = 32
+	keyLen = 32
 
 	// scrypt constants from http://code.google.com/p/go/source/browse/scrypt/scrypt.go?repo=crypto
 	// "N is a CPU/memory cost parameter, which must be a power of two greater than 1.
@@ -48,22 +48,31 @@ const (
 	p = 1
 )
 
+var randSrc = rand.Reader
+
 // ID contains the HMAC, the password, the salt and the hash to check.
 type ID struct {
-	Hmac []byte // HMAC Key
-	Pass string // Password
-	Salt []byte // Salt
-	Hash []byte // Hash to check
-	hchk []byte // Hash to compare against
+	Hmac    []byte // HMAC Key
+	Pass    string // Password
+	Salt    []byte // Salt
+	Hash    []byte // Hash to check
+	hchk    []byte // Hash to compare against
+	n, r, p int    // Scrypt variables
 }
 
 // New returns a new ID.
-func New() *ID { return new(ID) }
+func New() *ID {
+	return &ID{
+		n: n,
+		r: r,
+		p: p,
+	}
+}
 
 // doHash scrypt transforms the password and salt, and then HMAC transforms the result.
 // Assigns the resulting hash to the comparison hash.
 func (i *ID) doHash() error {
-	sck, err := scrypt.Key([]byte(i.Pass), i.Salt, n, r, p, keyLength)
+	sck, err := scrypt.Key([]byte(i.Pass), i.Salt, i.n, i.r, i.p, keyLen)
 	if err != nil {
 		return err
 	}
@@ -76,8 +85,8 @@ func (i *ID) doHash() error {
 // randSalt generates a random slice of bytes using crypto/rand
 // of length keyLength and assigns it as a new salt.
 func (i *ID) randSalt() error {
-	rh := make([]byte, keyLength)
-	if _, err := io.ReadFull(rand.Reader, rh); err != nil {
+	rh := make([]byte, keyLen)
+	if _, err := io.ReadFull(randSrc, rh); err != nil {
 		return err
 	}
 	i.Salt = rh
