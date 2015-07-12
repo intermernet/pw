@@ -6,7 +6,6 @@
 // Copyright 2012 The Go Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
-
 package pw
 
 import (
@@ -16,8 +15,8 @@ import (
 )
 
 type testPw struct {
-	hmk    []byte // HMAC Key
 	pw     string // password
+	hmk    []byte // HMAC Key
 	salt   []byte // salt
 	h      []byte // hash to check
 	output bool   // Output should be true
@@ -62,8 +61,8 @@ var saltLong = hashLong
 
 var good = []testPw{
 	{
-		hmacNorm,
 		passNorm,
+		hmacNorm,
 		saltNorm,
 		[]byte{
 			0x60, 0x72, 0x94, 0xca, 0xef, 0x28, 0x4b, 0xb3,
@@ -74,8 +73,8 @@ var good = []testPw{
 		true,
 	},
 	{
-		hmacNorm,
 		passNorm,
+		hmacNorm,
 		saltShort,
 		[]byte{
 			0x1d, 0x30, 0x6c, 0x45, 0x27, 0xed, 0x8d, 0x8a,
@@ -86,8 +85,8 @@ var good = []testPw{
 		true,
 	},
 	{
-		hmacNorm,
 		passNorm,
+		hmacNorm,
 		saltLong,
 		[]byte{
 			0xcb, 0xb4, 0x8b, 0xb6, 0x65, 0x63, 0xc0, 0x35,
@@ -98,8 +97,8 @@ var good = []testPw{
 		true,
 	},
 	{
-		hmacNorm,
 		passShort,
+		hmacNorm,
 		saltNorm,
 		[]byte{
 			0x81, 0x79, 0xd6, 0x34, 0x7, 0x2d, 0xd0, 0xf9,
@@ -110,8 +109,8 @@ var good = []testPw{
 		true,
 	},
 	{
-		hmacNorm,
 		passShort,
+		hmacNorm,
 		saltShort,
 		[]byte{
 			0xd, 0xf3, 0xad, 0xa4, 0x32, 0x9c, 0x53, 0xd,
@@ -122,8 +121,8 @@ var good = []testPw{
 		true,
 	},
 	{
-		hmacNorm,
 		passShort,
+		hmacNorm,
 		saltLong,
 		[]byte{
 			0xcf, 0xec, 0xe9, 0xa1, 0x7, 0x6, 0x5d, 0x69,
@@ -134,8 +133,8 @@ var good = []testPw{
 		true,
 	},
 	{
-		hmacNorm,
 		passLong,
+		hmacNorm,
 		saltNorm,
 		[]byte{
 			0x5c, 0xac, 0xd5, 0x1, 0x27, 0xf6, 0x47, 0xe2,
@@ -146,8 +145,8 @@ var good = []testPw{
 		true,
 	},
 	{
-		hmacNorm,
 		passLong,
+		hmacNorm,
 		saltShort,
 		[]byte{
 			0x7e, 0x78, 0x31, 0xc5, 0x60, 0x1d, 0x21, 0xfe,
@@ -158,8 +157,8 @@ var good = []testPw{
 		true,
 	},
 	{
-		hmacNorm,
 		passLong,
+		hmacNorm,
 		saltLong,
 		[]byte{
 			0x9e, 0xed, 0x30, 0x54, 0xc0, 0x49, 0x92, 0xd4,
@@ -170,8 +169,8 @@ var good = []testPw{
 		true,
 	},
 	{
-		hmacShort,
 		passNorm,
+		hmacShort,
 		saltNorm,
 		[]byte{
 			0x5b, 0xd9, 0xb0, 0x74, 0xc5, 0x69, 0xec, 0xf4,
@@ -182,8 +181,8 @@ var good = []testPw{
 		true,
 	},
 	{
-		hmacShort,
 		passNorm,
+		hmacShort,
 		saltShort,
 		[]byte{
 			0x70, 0x2c, 0x1d, 0x63, 0x55, 0x6d, 0xee, 0xe9,
@@ -194,8 +193,8 @@ var good = []testPw{
 		true,
 	},
 	{
-		hmacShort,
 		passNorm,
+		hmacShort,
 		saltLong,
 		[]byte{
 			0x70, 0x3a, 0x31, 0x90, 0xb1, 0x22, 0xf2, 0x9,
@@ -206,8 +205,8 @@ var good = []testPw{
 		true,
 	},
 	{
-		hmacShort,
 		passShort,
+		hmacShort,
 		saltNorm,
 		[]byte{
 			0x6a, 0xb4, 0x75, 0xca, 0x78, 0x17, 0xc2, 0x6c,
@@ -218,8 +217,8 @@ var good = []testPw{
 		true,
 	},
 	{
-		hmacShort,
 		passShort,
+		hmacShort,
 		saltShort,
 		[]byte{
 			0x1c, 0x74, 0x77, 0x7, 0x1a, 0x26, 0x3d, 0x96,
@@ -230,8 +229,8 @@ var good = []testPw{
 		true,
 	},
 	{
-		hmacShort,
 		passShort,
+		hmacShort,
 		saltLong,
 		[]byte{
 			0x4c, 0xd5, 0x2, 0xdd, 0xaa, 0x8c, 0xd8, 0xa0,
@@ -242,8 +241,8 @@ var good = []testPw{
 		true,
 	},
 	{
-		hmacShort,
 		passLong,
+		hmacShort,
 		saltNorm,
 		[]byte{
 			0x2d, 0x96, 0xec, 0x8e, 0x20, 0x88, 0xc6, 0x6e,
@@ -254,8 +253,8 @@ var good = []testPw{
 		true,
 	},
 	{
-		hmacShort,
 		passLong,
+		hmacShort,
 		saltShort,
 		[]byte{
 			0x97, 0x66, 0xae, 0x42, 0x3b, 0x8f, 0xaf, 0xf0,
@@ -266,8 +265,8 @@ var good = []testPw{
 		true,
 	},
 	{
-		hmacShort,
 		passLong,
+		hmacShort,
 		saltLong,
 		[]byte{
 			0x39, 0xe0, 0x47, 0xa1, 0xc5, 0xd4, 0x1e, 0x79,
@@ -278,8 +277,8 @@ var good = []testPw{
 		true,
 	},
 	{
-		hmacLong,
 		passNorm,
+		hmacLong,
 		saltNorm,
 		[]byte{
 			0xb5, 0xa1, 0x87, 0x6d, 0xd, 0xc7, 0xdd, 0xe1,
@@ -290,8 +289,8 @@ var good = []testPw{
 		true,
 	},
 	{
-		hmacLong,
 		passNorm,
+		hmacLong,
 		saltShort,
 		[]byte{
 			0x99, 0xd0, 0x2, 0xec, 0x23, 0xb9, 0xb1, 0x8f,
@@ -302,8 +301,8 @@ var good = []testPw{
 		true,
 	},
 	{
-		hmacLong,
 		passNorm,
+		hmacLong,
 		saltLong,
 		[]byte{
 			0xff, 0xd9, 0xd1, 0x5c, 0x7f, 0xae, 0x2c, 0xc2,
@@ -314,8 +313,8 @@ var good = []testPw{
 		true,
 	},
 	{
-		hmacLong,
 		passShort,
+		hmacLong,
 		saltNorm,
 		[]byte{
 			0x75, 0x2d, 0xbc, 0x5a, 0xc, 0x8, 0x58, 0x7f,
@@ -326,8 +325,8 @@ var good = []testPw{
 		true,
 	},
 	{
-		hmacLong,
 		passShort,
+		hmacLong,
 		saltShort,
 		[]byte{
 			0x7e, 0xa5, 0x17, 0x3b, 0xa9, 0x3d, 0x90, 0x3f,
@@ -338,8 +337,8 @@ var good = []testPw{
 		true,
 	},
 	{
-		hmacLong,
 		passShort,
+		hmacLong,
 		saltLong,
 		[]byte{
 			0x43, 0xcf, 0x66, 0xe1, 0x78, 0xbc, 0x73, 0x61,
@@ -350,8 +349,8 @@ var good = []testPw{
 		true,
 	},
 	{
-		hmacLong,
 		passLong,
+		hmacLong,
 		saltNorm,
 		[]byte{
 			0xb2, 0xe0, 0xf9, 0x80, 0xf1, 0x70, 0x60, 0xf6,
@@ -362,8 +361,8 @@ var good = []testPw{
 		true,
 	},
 	{
-		hmacLong,
 		passLong,
+		hmacLong,
 		saltShort,
 		[]byte{
 			0x30, 0x4a, 0x14, 0xdd, 0x43, 0xce, 0x5d, 0x6b,
@@ -374,8 +373,8 @@ var good = []testPw{
 		true,
 	},
 	{
-		hmacLong,
 		passLong,
+		hmacLong,
 		saltLong,
 		[]byte{
 			0x5b, 0xee, 0xa4, 0x58, 0xd6, 0xc, 0x54, 0xbd,
@@ -386,8 +385,8 @@ var good = []testPw{
 		true,
 	},
 	{
-		emptyHash,
 		emptyString,
+		emptyHash,
 		emptyHash,
 		[]byte{
 			0x8e, 0x1f, 0x9d, 0x8a, 0x51, 0x83, 0x3c, 0x69,
@@ -400,10 +399,10 @@ var good = []testPw{
 }
 
 var bad = []testPw{
-	{emptyHash, emptyString, emptyHash, emptyHash, true}, // No input, No output
-	{emptyHash, emptyString, emptyHash, hashNorm, true},  // No input, Wrong output
-	{hmacNorm, passNorm, saltNorm, emptyHash, true},      // Normal input, No output
-	{hmacNorm, passNorm, saltNorm, hashNorm, true},       // Normal input, Wrong output
+	{emptyString, emptyHash, emptyHash, emptyHash, true}, // No input, No output
+	{emptyString, emptyHash, emptyHash, hashNorm, true},  // No input, Wrong output
+	{passNorm, hmacNorm, saltNorm, emptyHash, true},      // Normal input, No output
+	{passNorm, hmacNorm, saltNorm, hashNorm, true},       // Normal input, Wrong output
 }
 
 func TestCreate(t *testing.T) {
@@ -412,12 +411,13 @@ func TestCreate(t *testing.T) {
 	}
 	id := New()
 	for _, v := range good {
-		id.Hmac, id.Pass, id.Salt = v.hmk, v.pw, v.salt
+		id.Pass, id.Hmac, id.Salt = v.pw, v.hmk, v.salt
 		if err := id.Create(); err != nil {
 			t.Errorf("got unexpected error: %v", err)
 		}
 	}
-	id.n, id.r, id.p = 0, 0, 0
+	// Invalid Scrypt variables
+	id.N, id.R, id.P = 0, 0, 0
 	if err := id.Create(); err == nil {
 		t.Errorf("expected err, got nil")
 	}
@@ -426,7 +426,7 @@ func TestCreate(t *testing.T) {
 func TestCheck(t *testing.T) {
 	id := New()
 	for i, v := range good {
-		id.Hmac, id.Pass, id.Salt, id.Hash = v.hmk, v.pw, v.salt, v.h
+		id.Pass, id.Hmac, id.Salt, id.Hash = v.pw, v.hmk, v.salt, v.h
 		chk, err := id.Check()
 		if err != nil {
 			t.Errorf("%d: got unexpected error: %s", i, err)
@@ -436,13 +436,14 @@ func TestCheck(t *testing.T) {
 		}
 	}
 	for i, v := range bad {
-		id.Hmac, id.Pass, id.Salt, id.Hash = v.hmk, v.pw, v.salt, v.h
+		id.Pass, id.Hmac, id.Salt, id.Hash = v.pw, v.hmk, v.salt, v.h
 		chk, err := id.Check()
 		if err == nil {
 			t.Errorf("%d: expected error, got nil, function returned %t", i, chk)
 		}
 	}
-	id.n, id.r, id.p = 0, 0, 0
+	// Invalid Scrypt variables
+	id.N, id.R, id.P = 0, 0, 0
 	if _, err := id.Check(); err == nil {
 		t.Errorf("expected err, got nil")
 	}
@@ -451,7 +452,7 @@ func TestCheck(t *testing.T) {
 func TestCreateAndCheck(t *testing.T) {
 	id := New()
 	for i, v := range good {
-		id.Hmac, id.Pass, id.Salt = v.hmk, v.pw, v.salt
+		id.Pass, id.Hmac, id.Salt = v.pw, v.hmk, v.salt
 		if err := id.Create(); err != nil {
 			t.Errorf("got unexpected error: %v", err)
 		}
@@ -497,7 +498,8 @@ func TestRandSalt(t *testing.T) {
 
 func TestScrypt(t *testing.T) {
 	id := New()
-	id.n, id.r, id.p = 0, 0, 0
+	// Invalid Scrypt variables
+	id.N, id.R, id.P = 0, 0, 0
 	if err := id.doHash(); err == nil {
 		t.Errorf("expected err, got nil")
 	}
@@ -506,7 +508,7 @@ func TestScrypt(t *testing.T) {
 func BenchmarkCreate(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		id := New()
-		id.Hmac, id.Pass, id.Salt = good[1].hmk, good[1].pw, good[1].salt
+		id.Pass, id.Hmac, id.Salt = good[1].pw, good[1].hmk, good[1].salt
 		if err := id.Create(); err == nil {
 			b.Errorf("expected err, got nil")
 		}
@@ -516,7 +518,7 @@ func BenchmarkCreate(b *testing.B) {
 func BenchmarkCheck(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		id := New()
-		id.Hmac, id.Pass, id.Salt, id.Hash = good[1].hmk, good[1].pw, good[1].salt, good[1].h
+		id.Pass, id.Hmac, id.Salt, id.Hash = good[1].pw, good[1].hmk, good[1].salt, good[1].h
 		if _, err := id.Check(); err != nil {
 			b.Errorf("%d: got unexpected error: %s", i, err)
 		}
@@ -526,7 +528,7 @@ func BenchmarkCheck(b *testing.B) {
 func BenchmarkCreateAndCheck(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		id := New()
-		id.Hmac, id.Pass, id.Salt = good[1].hmk, good[1].pw, good[1].salt
+		id.Pass, id.Hmac, id.Salt = good[1].pw, good[1].hmk, good[1].salt
 		if err := id.Create(); err == nil {
 			b.Errorf("expected %v, got nil", err)
 		}

@@ -20,7 +20,6 @@
 // [1] http://crackstation.net/hashing-security.htm
 //
 // [2] http://godoc.org/github.com/Intermernet/pw
-
 package pw
 
 import (
@@ -51,27 +50,28 @@ var randSrc = rand.Reader
 
 // ID contains the HMAC, the password, the salt and the hash to check.
 type ID struct {
-	Hmac    []byte // HMAC Key
 	Pass    string // Password
+	Hmac    []byte // HMAC Key
 	Salt    []byte // Salt
 	Hash    []byte // Hash to check
-	hchk    []byte // Hash to compare against
-	n, r, p int    // Scrypt variables
+	N, R, P int    // Scrypt variables
+
+	hchk []byte // Hash to compare against
 }
 
 // New returns a new ID.
 func New() *ID {
 	return &ID{
-		n: n,
-		r: r,
-		p: p,
+		N: n,
+		R: r,
+		P: p,
 	}
 }
 
 // doHash scrypt transforms the password and salt, and then HMAC transforms the result.
 // Assigns the resulting hash to the comparison hash.
 func (i *ID) doHash() error {
-	sck, err := scrypt.Key([]byte(i.Pass), i.Salt, i.n, i.r, i.p, keyLen)
+	sck, err := scrypt.Key([]byte(i.Pass), i.Salt, i.N, i.R, i.P, keyLen)
 	if err != nil {
 		return err
 	}
