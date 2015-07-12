@@ -47,8 +47,8 @@ const (
 )
 
 var (
-	randSrc        = rand.Reader
-	errHashVerFail = errors.New("hash verification failed")
+	randSrc    = rand.Reader
+	errVerFail = errors.New("verification failed")
 )
 
 // ID contains the HMAC, the password, the salt and the hash to check.
@@ -85,7 +85,7 @@ func (i *ID) doHash() error {
 }
 
 // randSalt generates a random slice of bytes using crypto/rand
-// of length keyLength and assigns it as a new salt.
+// of length keyLen and assigns it as a new salt.
 func (i *ID) randSalt() error {
 	rh := make([]byte, keyLen)
 	if _, err := io.ReadFull(randSrc, rh); err != nil {
@@ -120,5 +120,5 @@ func (i *ID) Check() (bool, error) {
 			return true, nil
 		}
 	}
-	return false, errHashVerFail
+	return false, errVerFail
 }
