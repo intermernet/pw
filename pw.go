@@ -98,7 +98,7 @@ func (i *ID) randSalt() error {
 // Create generates a new salt using "crypto/rand".
 // It then calls doHash() and sets the resulting hash and salt.
 func (i *ID) Create() error {
-	defer func() { i.Hash, i.hchk = i.hchk, []byte{} }() // Clear the hchk field.
+	defer func() { i.Hash, i.hchk = i.hchk, []byte{} }() // Set Hash, clear hchk
 	if err := i.randSalt(); err != nil {
 		return err
 	}
@@ -111,7 +111,7 @@ func (i *ID) Create() error {
 // Check calls doHash() and compares the resulting hash against the check hash.
 // Returns a boolean.
 func (i *ID) Check() (bool, error) {
-	defer func() { i.Hash, i.hchk = []byte{}, []byte{} }() // Clear the Hash and hchk fields.
+	defer func() { i.Hash, i.hchk = []byte{}, []byte{} }() // Clear Hash and hchk
 	if err := i.doHash(); err != nil {
 		return false, err
 	}
