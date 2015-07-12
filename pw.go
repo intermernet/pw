@@ -34,16 +34,15 @@ import (
 )
 
 const (
-	// Key length and salt length will be 32 bytes (256 bits)
-	keyLen = 32
+	// KeyLen (key length and salt length) is 32 bytes (256 bits)
+	KeyLen = 32
 
-	// scrypt constants from http://code.google.com/p/go/source/browse/scrypt/scrypt.go?repo=crypto
-	// "N is a CPU/memory cost parameter, which must be a power of two greater than 1.
-	// r and p must satisfy r * p < 2³⁰. If the parameters do not satisfy the
-	// limits, the function returns a nil byte slice and an error."
-	n = 16384
-	r = 8
-	p = 1
+	// N is a CPU/memory cost parameter
+	N = 16384
+	// R must satisfy R * P < 2³⁰.
+	R = 8
+	// P must satisfy R * P < 2³⁰.
+	P = 1
 )
 
 var (
@@ -52,12 +51,16 @@ var (
 )
 
 // ID contains the HMAC, the password, the salt and the hash to check.
+// scrypt variables from https://golang.org/x/crypto/scrypt
+// "N is a CPU/memory cost parameter, which must be a power of two greater than 1.
+// R and P must satisfy R * P < 2³⁰."
+// Defaults are  N = 16384, R = 8, P = 1
 type ID struct {
 	Pass    string // Password
 	Hmac    []byte // HMAC Key
 	Salt    []byte // Salt
 	Hash    []byte // Hash to check
-	N, R, P int    // Scrypt variables
+	N, R, P int    // scrypt variables
 
 	hchk []byte // Hash to compare against
 }
@@ -65,16 +68,16 @@ type ID struct {
 // New returns a new ID.
 func New() *ID {
 	return &ID{
-		N: n,
-		R: r,
-		P: p,
+		N: N,
+		R: R,
+		P: P,
 	}
 }
 
 // doHash scrypt transforms the password and salt, and then HMAC transforms the result.
 // Assigns the resulting hash to the comparison hash.
 func (i *ID) doHash() error {
-	sck, err := scrypt.Key([]byte(i.Pass), i.Salt, i.N, i.R, i.P, keyLen)
+	sck, err := scrypt.Key([]byte(i.Pass), i.Salt, i.N, i.R, i.P, KeyLen)
 	if err != nil {
 		return err
 	}
@@ -85,9 +88,9 @@ func (i *ID) doHash() error {
 }
 
 // randSalt generates a random slice of bytes using crypto/rand
-// of length keyLen and assigns it as a new salt.
+// of length KeyLen and assigns it as a new salt.
 func (i *ID) randSalt() error {
-	rh := make([]byte, keyLen)
+	rh := make([]byte, KeyLen)
 	if _, err := io.ReadFull(randSrc, rh); err != nil {
 		return err
 	}
@@ -115,7 +118,7 @@ func (i *ID) Check() (bool, error) {
 	if err := i.doHash(); err != nil {
 		return false, err
 	}
-	if subtle.ConstantTimeEq(int32(len(i.Hash)), int32(len(i.hchk))) == 1 {
+	if subtle.ConstantTimeEq(int32(len(i.Hash)), int32(KeyLen)) == 1 {
 		if subtle.ConstantTimeCompare(i.hchk, i.Hash) == 1 {
 			return true, nil
 		}
