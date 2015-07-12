@@ -46,7 +46,10 @@ const (
 	p = 1
 )
 
-var randSrc = rand.Reader
+var (
+	randSrc        = rand.Reader
+	errHashVerFail = errors.New("hash verification failed")
+)
 
 // ID contains the HMAC, the password, the salt and the hash to check.
 type ID struct {
@@ -109,7 +112,6 @@ func (i *ID) Create() error {
 // Returns a boolean.
 func (i *ID) Check() (bool, error) {
 	defer func() { i.Hash, i.hchk = []byte{}, []byte{} }() // Clear the Hash and hchk fields.
-	chkErr := errors.New("hash verification failed")
 	if err := i.doHash(); err != nil {
 		return false, err
 	}
@@ -118,5 +120,5 @@ func (i *ID) Check() (bool, error) {
 			return true, nil
 		}
 	}
-	return false, chkErr
+	return false, errHashVerFail
 }
