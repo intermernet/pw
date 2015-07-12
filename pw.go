@@ -1,17 +1,20 @@
 // Package pw is a Go library for password authentication.
 //
-// It attempts to put into practice the methodology described in CrackStation's "Salted Password
-// Hashing - Doing it Right". [1]
+// It attempts to put into practice the methodology described in CrackStation's
+// "Salted Password Hashing - Doing it Right". [1]
 //
-// It uses the scrypt KDF for key derivation, and assumes the use of an HMAC key for extra security.
+// It uses the scrypt KDF for key derivation, and assumes the use of an HMAC key
+// for extra security.
 //
-// The HMAC key should be provided from somewhere outside of the database which stores the user IDs,
-// hashes and salts. It should, at least, be stored in a secure file on the server, but it's
-// recommended to use an external server, or service, to provide the HMAC key.
+// The HMAC key should be provided from somewhere outside of the database which
+// stores the user IDs, hashes and salts. It should, at least, be stored in a
+// secure file on the server, but it's recommended to use an external server, or
+// service, to provide the HMAC key.
 //
 // The generated hashes are 256 bits in length, as are any generated salts.
 //
-// The input HMAC key and password are only limited in length by the underlying Go crypto libraries.
+// The input HMAC key and password are only limited in length by the underlying
+// Go crypto libraries.
 //
 // Use godoc [2] for documentation.
 //
@@ -52,13 +55,22 @@ var (
 
 // ID contains the HMAC, the password, the salt and the hash to check.
 //
-// Description of scrypt variables from https://golang.org/x/crypto/scrypt
+// It's possible to tune the scrypt variables (N, R and P), but changing these
+// will require recreation of all previous hashes.
 //
-// "N is a CPU/memory cost parameter, which must be a power of two greater than 1.
-// R and P must satisfy R * P < 2³⁰."
+// Description of scrypt variables from https://golang.org/x/crypto/scrypt:
+// "N is a CPU/memory cost parameter, which must be a power of two greater than
+// 1. R and P must satisfy R * P < 2³⁰."
 //
-// These were valid @ 2009 and should be increased as CPU power increases.
-// Please see http://www.tarsnap.com/scrypt.html for details.
+// The following quote is from http://www.tarsnap.com/scrypt/scrypt.pdf
+// May 2009.
+//
+// "Users of scrypt can tune the parameters N, r, and p according to the amount
+// of memory and computing power available, the latency-bandwidth product of the
+// memory subsystem, and the amount of parallelism desired; at the current time,
+// taking r = 8 and p = 1 appears to yield good results, but as memory latency
+// and CPU parallelism increase it is likely that the optimum values for both r
+// and p will increase"
 //
 // Defaults are  N = 16384, R = 8, P = 1
 type ID struct {
@@ -80,8 +92,8 @@ func New() *ID {
 	}
 }
 
-// doHash scrypt transforms the password and salt, and then HMAC transforms the result.
-// Assigns the resulting hash to the comparison hash.
+// doHash scrypt transforms the password and salt, and then HMAC transforms the
+// result. It assigns the resulting hash to the comparison hash.
 func (i *ID) doHash() error {
 	sck, err := scrypt.Key([]byte(i.Pass), i.Salt, i.N, i.R, i.P, KeyLen)
 	if err != nil {
