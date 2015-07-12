@@ -7,7 +7,7 @@ pw is a Go library for password authentication
 It attempts to put into practice the methodology described in [CrackStation's "Salted Password
 Hashing - Doing it Right".][1]
 
-It uses scrypt for key stretching, and assumes the use of an HMAC key for extra security.
+It uses [scrypt][2] for key stretching, and assumes the use of an HMAC key for extra security.
 
 The HMAC Key should be provided from somewhere outside of the database which stores the user IDs,
 hashes and salts. It should, at least, be stored in a secure file on the server, but it's
@@ -20,3 +20,4 @@ The input HMAC key and password are only limited in length by the underlying Go 
 Documentation available at http://godoc.org/github.com/Intermernet/pw
 
 [1]: http://crackstation.net/hashing-security.htm
+[2]: http://www.tarsnap.com/scrypt.html
