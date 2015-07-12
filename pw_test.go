@@ -1,13 +1,11 @@
-/*
-Test file for pw.go
-
-Test data blatantly stolen and modified from
-https://code.google.com/p/go/source/browse/scrypt/scrypt_test.go?repo=crypto
-
-Copyright 2012 The Go Authors. All rights reserved.
-Use of this source code is governed by a BSD-style
-license that can be found in the LICENSE file.
-*/
+// Test file for pw.go
+//
+// Test data blatantly stolen and modified from
+// https://code.google.com/p/go/source/browse/scrypt/scrypt_test.go?repo=crypto
+//
+// Copyright 2012 The Go Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
 
 package pw
 
