@@ -41,7 +41,7 @@ const (
 	KeyLen = 32
 
 	// N is a CPU/memory cost parameter
-	N = 16384
+	N = 32768
 	// R must satisfy R * P < 2³⁰.
 	R = 8
 	// P must satisfy R * P < 2³⁰.
