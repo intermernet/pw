@@ -16,13 +16,13 @@
 // The input HMAC key and password are only limited in length by the underlying
 // Go crypto libraries.
 //
-// Use godoc [2] for documentation.
+// Use https://pkg.go.dev/ [2] for documentation.
 //
-// Copyright Mike Hughes 2012 - 2015 (intermernet AT gmail DOT com).
+// Copyright Mike Hughes 2012 - 2021 (mike AT mikehughes DOT info).
 //
 // [1] http://crackstation.net/hashing-security.htm
 //
-// [2] http://godoc.org/github.com/Intermernet/pw
+// [2] https://pkg.go.dev/github.com/intermernet/pw
 package pw
 
 import (
@@ -73,6 +73,8 @@ var (
 // and p will increase"
 //
 // Defaults are  N = 16384, R = 8, P = 1
+//
+// As of 2020 N is now 32768
 type ID struct {
 	Pass    string // Password
 	Hmac    []byte // HMAC Key
