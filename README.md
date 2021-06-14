@@ -1,4 +1,4 @@
-[![PkgGoDev](https://pkg.go.dev/badge/github.com/intermernet/pw)](https://pkg.go.dev/github.com/intermernet/pw)
+[![PkgGoDev](https://pkg.go.dev/badge/github.com/intermernet/pw)](https://pkg.go.dev/github.com/intermernet/pw) [![Build Status](https://travis-ci.com/intermernet/pw.svg?branch=master)](https://travis-ci.com/intermernet/pw) [![Coverage Status](https://coveralls.io/repos/github/intermernet/pw/badge.svg?branch=master)](https://coveralls.io/github/intermernet/pw?branch=master)
 
 pw is a Go library for password authentication
 
