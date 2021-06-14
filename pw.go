@@ -74,7 +74,8 @@ var (
 //
 // Defaults are  N = 16384, R = 8, P = 1
 //
-// As of 2020 N is now 32768
+// As of 2021, N now defaults to 32768 due to Filippo Valsorda's 2017 blog post
+// (https://blog.filippo.io/the-scrypt-parameters/)
 type ID struct {
 	Pass    string // Password
 	Hmac    []byte // HMAC Key
