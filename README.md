@@ -19,3 +19,5 @@ Documentation available at https://pkg.go.dev/github.com/intermernet/pw
 
 [1]: http://crackstation.net/hashing-security.htm
 [2]: http://www.tarsnap.com/scrypt.html
+
+See the [Go playground](https://play.golang.org/p/Wq3TIQU0LlL) for a usage example.
