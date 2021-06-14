@@ -1,6 +1,4 @@
-[![GoDoc](https://godoc.org/github.com/Intermernet/pw?status.png)](https://godoc.org/github.com/Intermernet/pw) [![Build Status](https://drone.io/github.com/Intermernet/pw/status.png)](https://drone.io/github.com/Intermernet/pw/latest) [![Coverage Status](https://coveralls.io/repos/Intermernet/pw/badge.svg?branch=master&service=github)](https://coveralls.io/github/Intermernet/pw?branch=master)
-
-
+[![PkgGoDev](https://pkg.go.dev/badge/github.com/intermernet/pw)](https://pkg.go.dev/github.com/intermernet/pw)
 
 pw is a Go library for password authentication
 
@@ -17,7 +15,7 @@ The generated hashes are 256 bits in length, as are any generated salts.
 
 The input HMAC key and password are only limited in length by the underlying Go crypto libraries.
 
-Documentation available at http://godoc.org/github.com/Intermernet/pw
+Documentation available at https://pkg.go.dev/github.com/intermernet/pw
 
 [1]: http://crackstation.net/hashing-security.htm
 [2]: http://www.tarsnap.com/scrypt.html
